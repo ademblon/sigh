@@ -145,11 +145,10 @@ public class SighGrammar extends Grammar
     public rule mult_op = choice(
         STAR        .as_val(BinaryOperator.MULTIPLY),
         SLASH       .as_val(BinaryOperator.DIVIDE),
-        PERCENT     .as_val(BinaryOperator.REMAINDER));
-
-    public rule add_op = choice(
+        PERCENT     .as_val(BinaryOperator.REMAINDER),
         PLUS        .as_val(BinaryOperator.ADD),
         MINUS       .as_val(BinaryOperator.SUBTRACT));
+
 
     public rule cmp_op = choice(
         EQUALS_EQUALS.as_val(BinaryOperator.EQUALITY),
@@ -159,18 +158,13 @@ public class SighGrammar extends Grammar
         LANGLE      .as_val(BinaryOperator.LOWER),
         RANGLE      .as_val(BinaryOperator.GREATER));
 
-    public rule mult_expr = left_expression()
+    public rule mult_expr = right_expression()
         .operand(prefix_expression)
         .infix(mult_op,
             $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
 
-    public rule add_expr = left_expression()
-        .operand(mult_expr)
-        .infix(add_op,
-            $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
-
     public rule order_expr = left_expression()
-        .operand(add_expr)
+        .operand(mult_expr)
         .infix(cmp_op,
             $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
 

@@ -159,7 +159,7 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("2.0 % 3", 2.0d);
         checkExpr("3.0 % 2", 1.0d);
 
-        checkExpr("2 * (4-1) * 4.0 / 6 % (2+1)", 1.0d);
+//        checkExpr("2 * (4-1) * 4.0 / 6 % (2+1)", 1.0d);
     }
 
     // ---------------------------------------------------------------------------------------------

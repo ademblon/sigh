@@ -55,25 +55,8 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("2.0 / 3.0", new BinaryExpressionNode(null, floatlit(2), DIVIDE, floatlit(3)));
         successExpect("2.0 % 3.0", new BinaryExpressionNode(null, floatlit(2), REMAINDER, floatlit(3)));
 
-        successExpect("2 * (4-1) * 4.0 / 6 % (2+1)", new BinaryExpressionNode(null,
-            new BinaryExpressionNode(null,
-                new BinaryExpressionNode(null,
-                    new BinaryExpressionNode(null,
-                        intlit(2),
-                        MULTIPLY,
-                        new ParenthesizedNode(null, new BinaryExpressionNode(null,
-                            intlit(4),
-                            SUBTRACT,
-                            intlit(1)))),
-                    MULTIPLY,
-                    floatlit(4d)),
-                DIVIDE,
-                intlit(6)),
-            REMAINDER,
-            new ParenthesizedNode(null, new BinaryExpressionNode(null,
-                intlit(2),
-                ADD,
-                intlit(1)))));
+        successExpect("1 + 2 * 3", new BinaryExpressionNode(null, intlit(1) , ADD,  new BinaryExpressionNode(null, intlit(2), MULTIPLY, intlit(3))));
+
     }
 
     // ---------------------------------------------------------------------------------------------
