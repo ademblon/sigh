@@ -158,8 +158,6 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("3.0 / 2", 3d / 2d);
         checkExpr("2.0 % 3", 2.0d);
         checkExpr("3.0 % 2", 1.0d);
-
-//        checkExpr("2 * (4-1) * 4.0 / 6 % (2+1)", 1.0d);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -351,4 +349,42 @@ public final class InterpreterTests extends TestFixture {
     // ---------------------------------------------------------------------------------------------
 
     // NOTE(norswap): Not incredibly complete, but should cover the basics.
+
+    //------------------------------------- new tests ----------------------------------------------
+
+    @Test public void testOrderRightLeftBinary() {
+        checkExpr("1 + 2 + 3", 6L);
+        checkExpr("1 - 2 - 3", 2L);
+        checkExpr("8 / 4 / 2", 4L);
+        checkExpr("2 * 3 * 4", 24L);
+        checkExpr("2 % 5 % 7", 2L);
+        checkExpr("7 % 5 % 3", 1L);
+
+        checkExpr("1.0 + 2.0 + 3.0", 6.0d);
+        checkExpr("1.0 - 2.0 - 3.0", 2.0d);
+        checkExpr("1.0 / 2.0 / 2.0", 1.0d);
+        checkExpr("2.0 * 3.0 * 4.0", 24.0d);
+        checkExpr("2.0 % 5.0 % 7.0", 2.0d);
+        checkExpr("7.0 % 5.0 % 3.0", 1.0d);
+    }
+
+    @Test public void testMathPriority() {
+
+        checkExpr("1 * 2 - 3", -1L);
+        checkExpr("1 - 2 * 3 ", -5L);
+        checkExpr("1 * 2 + 3", 5L);
+        checkExpr("1 + 2 * 3", 7L);
+        checkExpr("3 / 2 - 1", 3L);
+        checkExpr("2 % 3 -1 ", 0L);
+        checkExpr("3 - 2 % 3", 1L);
+
+        checkExpr("1.0 * 2.0 - 3.0", -1.0d);
+        checkExpr("1.0 - 2.0 * 3.0 ", -5.0d);
+        checkExpr("1.0 * 2.0 + 3.0", 5.0d);
+        checkExpr("1.0 + 2.0 * 3.0", 7.0d);
+        checkExpr("3.0 / 2.0 - 1.0", 3.0d);
+        checkExpr("2.0 % 3.0 -1.0 ", 0.0d);
+        checkExpr("3.0 - 2.0 % 3.0", 1.0d);
+
+    }
 }

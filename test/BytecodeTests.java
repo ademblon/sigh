@@ -268,4 +268,40 @@ public class BytecodeTests
         check(makePair + "x.x = 3; print(\"\" + x.x)", "3");
         check(makePair + "x.y = 3; print(\"\" + x.y)", "3.0");
     }
+
+
+    //------------------------------------- new tests ----------------------------------------------
+    @Test public void testOrderRightLeftBinary() {
+        checkExpr("1 + 2 + 3", "6");
+        checkExpr("1 - 2 - 3", "2");
+        checkExpr("8 / 4 / 2", "4");
+        checkExpr("2 * 3 * 4", "24");
+        checkExpr("2 % 5 % 7", "2");
+        checkExpr("7 % 5 % 3", "1");
+
+        checkExpr("1.0 + 2.0 + 3.0", "6.0");
+        checkExpr("1.0 - 2.0 - 3.0", "2.0");
+        checkExpr("1.0 / 2.0 / 2.0", "1.0");
+        checkExpr("2.0 * 3.0 * 4.0", "24.0");
+        checkExpr("2.0 % 5.0 % 7.0", "2.0");
+        checkExpr("7.0 % 5.0 % 3.0", "1.0");
+    }
+
+    @Test public void testMathPriority() {
+        checkExpr("1 * 2 - 3", "-1");
+        checkExpr("1 - 2 * 3 ", "-5");
+        checkExpr("1 * 2 + 3", "5");
+        checkExpr("1 + 2 * 3", "7");
+        checkExpr("3 / 2 - 1", "3");
+        checkExpr("2 % 3 -1 ", "0");
+        checkExpr("3 - 2 % 3", "1");
+
+        checkExpr("1.0 * 2.0 - 3.0", "-1.0");
+        checkExpr("1.0 - 2.0 * 3.0 ", "-5.0");
+        checkExpr("1.0 * 2.0 + 3.0", "5.0");
+        checkExpr("1.0 + 2.0 * 3.0", "7.0");
+        checkExpr("3.0 / 2.0 - 1.0", "3.0");
+        checkExpr("2.0 % 3.0 -1.0 ", "0.0");
+        checkExpr("3.0 - 2.0 % 3.0", "1.0");
+    }
 }

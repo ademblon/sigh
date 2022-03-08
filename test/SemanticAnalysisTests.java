@@ -300,5 +300,44 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
             "Missing return in function");
     }
 
-    // ---------------------------------------------------------------------------------------------
+    //------------------------------------- new tests ----------------------------------------------
+
+    @Test public void  testComplexBinaries()
+    {
+        successInput("return 1 + 2 + 3 + 4");
+        successInput("return 2 - 1 + 5 - 7");
+        successInput("return 2 * 3 / 7 * 2");
+        successInput("return 2 - 3 % 5 * 7");
+        successInput("return 3 / 2 - 5 * 7");
+        successInput("return 2 + 3 - 10 / 8");
+        successInput("return 3 % 2 % 8 * 10");
+
+        successInput("return 1.0 + 2.0 + 3.0 + 4.0");
+        successInput("return 2.0 - 1.0 + 5.0 - 7.0");
+        successInput("return 2.0 * 3.0 / 7.0 * 2.0");
+        successInput("return 2.0 - 3.0 % 5.0 * 7.0");
+        successInput("return 3.0 / 2.0 - 5.0 * 7.0");
+        successInput("return 2.0 + 3.0 - 10.0 / 8.0");
+        successInput("return 3.0 % 2.0 % 8.0 * 10.0");
+
+        successInput("return 1.0 + 2 + 3 + 4");
+        successInput("return 2 - 1.0 + 5 - 7");
+        successInput("return 2 * 3 / 7.0 * 2");
+        successInput("return 2 - 3 % 5 * 7.0");
+        successInput("return 3 / 2 - 5.0 * 7");
+        successInput("return 2 + 3.0 - 10 / 8");
+        successInput("return 3.0 % 2 % 8 * 10");
+
+        successInput("return 1.0 + 2 + (3 + 4)");
+        successInput("return 2 - (1.0 + 5) - 7");
+        successInput("return (2 * 3 / 7.0 * 2)");
+        successInput("return 2 - (3 % 5) * 7.0");
+        successInput("return ((3 / 2) - (5.0 * 7))");
+        successInput("return (2 + 3.0 - 10 / 8)");
+        successInput("return (((3.0 % 2) % 8) * 10)");
+
+        successInput("var X: Int= 3 + 2 * 3; " +
+            "var Y: Int= 10;" +
+            "var Z: Int = 17 + Y + X");
+    }
 }

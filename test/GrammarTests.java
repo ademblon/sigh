@@ -54,9 +54,6 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("2.0 * 3.0", new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3)));
         successExpect("2.0 / 3.0", new BinaryExpressionNode(null, floatlit(2), DIVIDE, floatlit(3)));
         successExpect("2.0 % 3.0", new BinaryExpressionNode(null, floatlit(2), REMAINDER, floatlit(3)));
-
-        successExpect("1 + 2 * 3", new BinaryExpressionNode(null, intlit(1) , ADD,  new BinaryExpressionNode(null, intlit(2), MULTIPLY, intlit(3))));
-
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -120,5 +117,36 @@ public class GrammarTests extends AutumnTestFixture {
             new BlockNode(null, asList(new ReturnNode(null, null)))));
     }
 
-    // ---------------------------------------------------------------------------------------------
+    //------------------------------------- new tests ----------------------------------------------
+
+    @Test public void testOrderRightLeftBinary() {
+
+        successExpect("1.0 + 2.0 + 3.0", new BinaryExpressionNode(null, floatlit(1), ADD,new BinaryExpressionNode(null, floatlit(2), ADD, floatlit(3))));
+        successExpect("1.0 - 2.0 - 3.0", new BinaryExpressionNode(null, floatlit(1), SUBTRACT,new BinaryExpressionNode(null, floatlit(2), SUBTRACT, floatlit(3))));
+        successExpect("1.0 * 2.0 * 3.0", new BinaryExpressionNode(null, floatlit(1), MULTIPLY,new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3))));
+        successExpect("1.0 / 2.0 / 3.0", new BinaryExpressionNode(null, floatlit(1), DIVIDE,new BinaryExpressionNode(null, floatlit(2), DIVIDE, floatlit(3))));
+        successExpect("1.0 % 2.0 % 3.0", new BinaryExpressionNode(null, floatlit(1), REMAINDER,new BinaryExpressionNode(null, floatlit(2), REMAINDER, floatlit(3))));
+
+
+        successExpect("1 + 2 + 3", new BinaryExpressionNode(null, intlit(1), ADD,new BinaryExpressionNode(null, intlit(2), ADD, intlit(3))));
+        successExpect("1 - 2 - 3", new BinaryExpressionNode(null, intlit(1), SUBTRACT,new BinaryExpressionNode(null,intlit(2), SUBTRACT, intlit(3))));
+        successExpect("1 * 2 * 3", new BinaryExpressionNode(null, intlit(1), MULTIPLY,new BinaryExpressionNode(null, intlit(2), MULTIPLY, intlit(3))));
+        successExpect("1 / 2 / 3", new BinaryExpressionNode(null, intlit(1), DIVIDE,new BinaryExpressionNode(null, intlit(2), DIVIDE, intlit(3))));
+        successExpect("1 % 2 % 3", new BinaryExpressionNode(null, intlit(1), REMAINDER,new BinaryExpressionNode(null, intlit(2), REMAINDER, intlit(3))));
+    }
+
+    @Test public void testMathPriority() {
+        successExpect("1.0 + 2.0 * 3.0", new BinaryExpressionNode(null, floatlit(1), ADD,new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3))));
+        successExpect("1.0 * 2.0 - 3.0", new BinaryExpressionNode(null, floatlit(1), MULTIPLY,new BinaryExpressionNode(null, floatlit(2), SUBTRACT, floatlit(3))));
+        successExpect("1.0 / 2.0 * 3.0", new BinaryExpressionNode(null, floatlit(1), DIVIDE,new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3))));
+        successExpect("1.0 + 2.0 / 3.0", new BinaryExpressionNode(null, floatlit(1), ADD,new BinaryExpressionNode(null, floatlit(2), DIVIDE, floatlit(3))));
+        successExpect("1.0 % 2.0 - 3.0", new BinaryExpressionNode(null, floatlit(1), REMAINDER,new BinaryExpressionNode(null, floatlit(2), SUBTRACT, floatlit(3))));
+
+
+        successExpect("1 % 2 + 3", new BinaryExpressionNode(null, intlit(1), REMAINDER,new BinaryExpressionNode(null, intlit(2), ADD, intlit(3))));
+        successExpect("1 + 2 * 3", new BinaryExpressionNode(null, intlit(1), ADD,new BinaryExpressionNode(null,intlit(2), MULTIPLY, intlit(3))));
+        successExpect("1 * 2 % 3", new BinaryExpressionNode(null, intlit(1), MULTIPLY,new BinaryExpressionNode(null, intlit(2), REMAINDER, intlit(3))));
+        successExpect("1 - 2 / 3", new BinaryExpressionNode(null, intlit(1), SUBTRACT,new BinaryExpressionNode(null, intlit(2), DIVIDE, intlit(3))));
+        successExpect("1 * 2 % 3", new BinaryExpressionNode(null, intlit(1), MULTIPLY,new BinaryExpressionNode(null, intlit(2), REMAINDER, intlit(3))));
+    }
 }
