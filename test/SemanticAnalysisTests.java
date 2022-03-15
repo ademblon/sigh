@@ -97,8 +97,6 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
 
         failureInputWith("return 2 + true", "Trying to add Int with Bool");
         failureInputWith("return true + 2", "Trying to add Bool with Int");
-        failureInputWith("return 2 + [1]", "Trying to add Int with Int[]");
-        failureInputWith("return [1] + 2", "Trying to add Int[] with Int");
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -339,5 +337,60 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("var X: Int= 3 + 2 * 3; " +
             "var Y: Int= 10;" +
             "var Z: Int = 17 + Y + X");
+    }
+    
+    @Test public void testBinariesIntOpArray(){
+        successInput("return 1 + [2]");
+        successInput("return 1 + [1, 2, 3]");
+        successInput("return 1 - [2]");
+        successInput("return 1 - [1, 2, 3]");
+        successInput("return 1 * [2]");
+        successInput("return 1 * [1, 2, 3]");
+        successInput("return 1 / [2]");
+        successInput("return 1 / [1, 2, 3]");
+        successInput("return 1 % [2]");
+        successInput("return 1 % [1, 2, 3]");
+    }
+
+    @Test public void testBinariesArrayIntOpArray(){
+
+        successInput("return [1] + [2]");
+        successInput("return [1, 2, 3] + [1, 2, 3]");
+        successInput("return [1] - [2]");
+        successInput("return [1, 2, 3] - [1, 2, 3]");
+        successInput("return [1] * [2]");
+        successInput("return [1, 2, 3] * [1, 2, 3]");
+        successInput("return [1] / [2]");
+        successInput("return [1, 2, 3] / [1, 2, 3]");
+        successInput("return [1] % [2]");
+        successInput("return [1, 2, 3] % [1, 2, 3]");
+    }
+
+    @Test public void testBinariesDoubleOpArray(){
+
+        successInput("return 1.0 + [2.0]");
+        successInput("return 1.0 + [1.0, 2.0, 3.0]");
+        successInput("return 1.0 - [2.0]");
+        successInput("return 1.0 - [1.0, 2.0, 3.0]");
+        successInput("return 1.0 * [2.0]");
+        successInput("return 1.0 * [1.0, 2.0, 3.0]");
+        successInput("return 1.0 / [2.0]");
+        successInput("return 1.0 / [1.0, 2.0, 3.0]");
+        successInput("return 1.0 % [2.0]");
+        successInput("return 1.0 % [1.0, 2.0, 3.0]");
+    }
+
+    @Test public void testBinariesArrayDoubleOpArray(){
+
+        successInput("return [1.0] + [2.0]");
+        successInput("return [1.0, 2.0, 3.0] + [1.0, 2.0, 3.0]");
+        successInput("return [1.0] - [2.0]");
+        successInput("return [1.0, 2.0, 3.0] - [1.0, 2.0, 3.0]");
+        successInput("return [1.0] * [2.0]");
+        successInput("return [1.0, 2.0, 3.0] * [1.0, 2.0, 3.0]");
+        successInput("return [1.0] / [2.0]");
+        successInput("return [1.0, 2.0, 3.0] / [1.0, 2.0, 3.0]");
+        successInput("return [1.0] % [2.0]");
+        successInput("return [1.0, 2.0, 3.0] % [1.0, 2.0, 3.0]");
     }
 }

@@ -3,6 +3,9 @@ import norswap.sigh.SighGrammar;
 import norswap.sigh.ast.*;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.util.Arrays.asList;
 import static norswap.sigh.ast.BinaryOperator.*;
 
@@ -21,6 +24,7 @@ public class GrammarTests extends AutumnTestFixture {
     private static FloatLiteralNode floatlit (double d) {
         return new FloatLiteralNode(null, d);
     }
+
 
     // ---------------------------------------------------------------------------------------------
 
@@ -120,7 +124,7 @@ public class GrammarTests extends AutumnTestFixture {
     //------------------------------------- new tests ----------------------------------------------
 
     @Test public void testOrderRightLeftBinary() {
-
+        rule = grammar.expression;
         successExpect("1.0 + 2.0 + 3.0", new BinaryExpressionNode(null, floatlit(1), ADD,new BinaryExpressionNode(null, floatlit(2), ADD, floatlit(3))));
         successExpect("1.0 - 2.0 - 3.0", new BinaryExpressionNode(null, floatlit(1), SUBTRACT,new BinaryExpressionNode(null, floatlit(2), SUBTRACT, floatlit(3))));
         successExpect("1.0 * 2.0 * 3.0", new BinaryExpressionNode(null, floatlit(1), MULTIPLY,new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3))));
@@ -136,6 +140,7 @@ public class GrammarTests extends AutumnTestFixture {
     }
 
     @Test public void testMathPriority() {
+        rule = grammar.expression;
         successExpect("1.0 + 2.0 * 3.0", new BinaryExpressionNode(null, floatlit(1), ADD,new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3))));
         successExpect("1.0 * 2.0 - 3.0", new BinaryExpressionNode(null, floatlit(1), MULTIPLY,new BinaryExpressionNode(null, floatlit(2), SUBTRACT, floatlit(3))));
         successExpect("1.0 / 2.0 * 3.0", new BinaryExpressionNode(null, floatlit(1), DIVIDE,new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3))));
@@ -149,4 +154,62 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("1 - 2 / 3", new BinaryExpressionNode(null, intlit(1), SUBTRACT,new BinaryExpressionNode(null, intlit(2), DIVIDE, intlit(3))));
         successExpect("1 * 2 % 3", new BinaryExpressionNode(null, intlit(1), MULTIPLY,new BinaryExpressionNode(null, intlit(2), REMAINDER, intlit(3))));
     }
+
+    @Test public void testBinaryIntOpArray() {
+        rule = grammar.expression;
+        successExpect("1 + [2]", new BinaryExpressionNode(null, intlit(1), ADD, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 + [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), ADD, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 * [2]", new BinaryExpressionNode(null, intlit(1), MULTIPLY, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 * [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), MULTIPLY, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 - [2]", new BinaryExpressionNode(null, intlit(1), SUBTRACT, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 - [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), SUBTRACT, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 / [2]", new BinaryExpressionNode(null, intlit(1), DIVIDE, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 / [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), DIVIDE, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 % [2]", new BinaryExpressionNode(null, intlit(1), REMAINDER, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 % [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), REMAINDER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+    }
+
+    @Test public void testBinaryDoubleOpArray() {
+        rule = grammar.expression;
+        successExpect("1.0 + [2.0]", new BinaryExpressionNode(null, floatlit(1), ADD, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 + [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), ADD, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 * [2.0]", new BinaryExpressionNode(null, floatlit(1), MULTIPLY, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 * [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), MULTIPLY, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 - [2.0]", new BinaryExpressionNode(null, floatlit(1), SUBTRACT, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 - [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), SUBTRACT, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 / [2.0]", new BinaryExpressionNode(null, floatlit(1), DIVIDE, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 / [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), DIVIDE, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 % [2.0]", new BinaryExpressionNode(null, floatlit(1), REMAINDER, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 % [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), REMAINDER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+    }
+
+    @Test public void testBinaryDoubleArrayOpArray() {
+        rule = grammar.expression;
+        successExpect("[1.0] + [3.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),ADD,new ArrayLiteralNode(null, asList(floatlit(3)))));
+        successExpect("[1.0, 2.0, 3.0] + [4.0, 5.0, 6.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),ADD,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+        successExpect("[1.0] - [3.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),SUBTRACT,new ArrayLiteralNode(null, asList(floatlit(3)))));
+        successExpect("[1.0, 2.0, 3.0] - [4.0, 5.0, 6.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),SUBTRACT,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+        successExpect("[1.0] * [3.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),MULTIPLY,new ArrayLiteralNode(null, asList(floatlit(3)))));
+        successExpect("[1.0, 2.0, 3.0] * [4.0, 5.0, 6.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),MULTIPLY,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+        successExpect("[1.0] / [3.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),DIVIDE,new ArrayLiteralNode(null, asList(floatlit(3)))));
+        successExpect("[1.0, 2.0, 3.0] / [4.0, 5.0, 6.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),DIVIDE,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+        successExpect("[1.0] % [3.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),REMAINDER,new ArrayLiteralNode(null, asList(floatlit(3)))));
+        successExpect("[1.0, 2.0, 3.0] % [4.0, 5.0, 6.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),REMAINDER,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+
+    }
+
+    @Test public void testBinaryIntArrayOpArray() {
+        rule = grammar.expression;
+        successExpect("[1] + [3]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),ADD,new ArrayLiteralNode(null, asList(intlit(3)))));
+        successExpect("[1, 2, 3] + [4, 5, 6]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),ADD,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+        successExpect("[1] - [3]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),SUBTRACT,new ArrayLiteralNode(null, asList(intlit(3)))));
+        successExpect("[1, 2, 3] - [4, 5, 6]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),SUBTRACT,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+        successExpect("[1] * [3]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),MULTIPLY,new ArrayLiteralNode(null, asList(intlit(3)))));
+        successExpect("[1, 2, 3] * [4, 5, 6]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),MULTIPLY,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+        successExpect("[1] / [3]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),DIVIDE,new ArrayLiteralNode(null, asList(intlit(3)))));
+        successExpect("[1, 2, 3] / [4, 5, 6]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),DIVIDE,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+        successExpect("[1] % [3]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),REMAINDER,new ArrayLiteralNode(null, asList(intlit(3)))));
+        successExpect("[1, 2, 3] % [4, 5, 6]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),REMAINDER,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+    }
+
 }

@@ -502,7 +502,37 @@ public final class SemanticAnalysis
 
     private void binaryArithmetic (Rule r, BinaryExpressionNode node, Type left, Type right)
     {
-        if (left instanceof IntType)
+        if (left instanceof ArrayType || right instanceof ArrayType)
+        {
+            Type leftType, rightType;
+            if(left instanceof ArrayType)
+                leftType = ((ArrayType) left).componentType;
+            else if(left instanceof IntType)
+                leftType = IntType.INSTANCE;
+            else if(left instanceof FloatType)
+                 leftType = FloatType.INSTANCE;
+            else
+                leftType = NullType.INSTANCE;
+
+            if(right instanceof ArrayType)
+                rightType = ((ArrayType) right).componentType;
+            else if(right instanceof IntType)
+                rightType = IntType.INSTANCE;
+            else if(right instanceof FloatType)
+                rightType = FloatType.INSTANCE;
+            else
+                rightType = NullType.INSTANCE;
+
+
+            if(leftType instanceof  NullType || rightType instanceof  NullType)
+                r.error(arithmeticError(node, "Int[]", right), node);
+            else if(leftType instanceof FloatType || rightType instanceof FloatType)
+                r.set(0, new ArrayType(FloatType.INSTANCE));
+            else
+                r.set(0, new ArrayType(IntType.INSTANCE));
+        }
+
+        else if (left instanceof IntType)
             if (right instanceof IntType)
                 r.set(0, IntType.INSTANCE);
             else if (right instanceof FloatType)
