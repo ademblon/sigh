@@ -606,6 +606,31 @@ public final class Interpreter {
                 fright = (double) right;
         }
 
+        //convert long to double if necessary
+        if(isfloat)
+        {
+            if(leftType instanceof IntType)
+            {
+                fleft = (double) ileft;
+            }
+            else if(leftType instanceof  ArrayType)
+            {
+                if(((ArrayType) leftType).componentType instanceof IntType){
+                    afleft = castLongArrayToDouble(aileft);
+                }
+            }
+
+            if(rightType instanceof IntType)
+            {
+                fright = (double) iright;
+            }
+            else if(rightType instanceof  ArrayType)
+            {
+                if(((ArrayType) rightType).componentType instanceof IntType){
+                    afright = castLongArrayToDouble(airight);
+                }
+            }
+        }
 
         // Check if array have same length
         if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
@@ -718,6 +743,16 @@ public final class Interpreter {
         for(int i = 0; i < objects.length;i++)
         {
             doubles[i] = (double) objects[i];
+        }
+        return doubles;
+    }
+
+    public double[] castLongArrayToDouble(long[] longs){
+        double[] doubles = new double[longs.length];
+
+        for(int i = 0; i < longs.length;i++)
+        {
+            doubles[i] = (double) longs[i];
         }
         return doubles;
     }
