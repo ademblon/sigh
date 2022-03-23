@@ -1,5 +1,5 @@
 // This file showcases every single syntactic feature in the language.
-
+/*
 fun array_add (a: Int[]): Int
 {
     fun add (a: Int, b: Int): Int {
@@ -64,5 +64,18 @@ var intArray: Int[] = []
 var stringArray: String[] = []
 use_array([])
 
+*/
+
 var th: Int = 2 * 3 + 4
 print("" + th)
+
+var test: Float[] = 1 + [2, 3, 4]
+print("" + test)
+test = [3.5, 7.7, 2.2] + [2, 3, 4]
+print("" + test)
+
+test = [3.5, 7.7, 2.2] + 2
+print("" + test)
+
+var test: Float[] = 4 != [3.5, 4.0, 2.2]
+print("" + test)

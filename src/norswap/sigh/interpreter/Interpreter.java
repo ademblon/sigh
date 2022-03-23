@@ -238,17 +238,17 @@ public final class Interpreter {
                 case SUBTRACT:
                     return fleft - fright;
                 case GREATER:
-                    return fleft > fright;
+                    return fleft > fright ? 1.0 : 0.0;
                 case LOWER:
-                    return fleft < fright;
+                    return fleft < fright ? 1.0 : 0.0;
                 case GREATER_EQUAL:
-                    return fleft >= fright;
+                    return fleft >= fright ? 1.0 : 0.0 ;
                 case LOWER_EQUAL:
-                    return fleft <= fright;
+                    return fleft <= fright ? 1.0 : 0.0;
                 case EQUALITY:
-                    return fleft == fright;
+                    return fleft == fright ? 1.0 : 0.0;
                 case NOT_EQUALS:
-                    return fleft != fright;
+                    return fleft != fright ? 1.0 : 0.0;
                 default:
                     throw new Error("should not reach here");
             }
@@ -265,17 +265,17 @@ public final class Interpreter {
                 case SUBTRACT:
                     return ileft - iright;
                 case GREATER:
-                    return ileft > iright;
+                    return ileft > iright ? 1 : 0;
                 case LOWER:
-                    return ileft < iright;
+                    return ileft < iright ? 1 : 0;
                 case GREATER_EQUAL:
-                    return ileft >= iright;
+                    return ileft >= iright ? 1 : 0;
                 case LOWER_EQUAL:
-                    return ileft <= iright;
+                    return ileft <= iright ? 1 : 0;
                 case EQUALITY:
-                    return ileft == iright;
+                    return ileft == iright ? 1 : 0;
                 case NOT_EQUALS:
-                    return ileft != iright;
+                    return ileft != iright ? 1 : 0;
                 default:
                     throw new Error("should not reach here");
             }
@@ -680,7 +680,7 @@ public final class Interpreter {
                 case SUBTRACT:
                     return fleft - fright;
                 case GREATER:
-                    return fleft > fright ? 1.0 : 0.0;
+                    return  fleft > fright ? 1.0 : 0.0;
                 case LOWER:
                     return fleft < fright ? 1.0 : 0.0;
                 case GREATER_EQUAL:
@@ -707,7 +707,7 @@ public final class Interpreter {
                 case SUBTRACT:
                     return ileft - iright;
                 case GREATER:
-                    return ileft > iright ? 1 : 0;
+                    return  ileft > iright ? 1 : 0;
                 case LOWER:
                     return ileft < iright ? 1 : 0;
                 case GREATER_EQUAL:

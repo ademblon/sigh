@@ -451,7 +451,8 @@ public class BytecodeCompiler
         } else if (left instanceof IntType && right instanceof FloatType) {
             // in this case, we've added a L2D instruction before the long operand beforehand
             method.visitInsn(doubleOpcode);
-        } else {
+        }
+        else {
             throw new Error("unexpected numeric operation type combination: " + left + ", " + right);
         }
     }

@@ -558,12 +558,33 @@ public final class SemanticAnalysis
 
     private void binaryComparison (Rule r, BinaryExpressionNode node, Type left, Type right)
     {
-        r.set(0, BoolType.INSTANCE);
+        Boolean isfloat = left instanceof FloatType || right instanceof FloatType;
+        if(left instanceof ArrayType || right instanceof ArrayType)
+        {
+
+            if(left instanceof ArrayType)
+                if(((ArrayType) left).componentType instanceof FloatType)
+                    isfloat = true;
+            if(right instanceof ArrayType)
+                if(((ArrayType) right).componentType instanceof FloatType)
+                    isfloat = true;
+
+            if(isfloat)
+                r.set(0, new ArrayType(FloatType.INSTANCE));
+            else
+                r.set(0, new ArrayType(IntType.INSTANCE));
+            return;
+        }
+
+        if(isfloat)
+            r.set(0, FloatType.INSTANCE);
+        else
+            r.set(0, IntType.INSTANCE);
 
         if (!(left instanceof IntType) && !(left instanceof FloatType))
             r.errorFor("Attempting to perform arithmetic comparison on non-numeric type: " + left,
                 node.left);
-        if (!(right instanceof IntType) && !(right instanceof FloatType))
+        if (!(right instanceof IntType) && !(right instanceof FloatType) )
             r.errorFor("Attempting to perform arithmetic comparison on non-numeric type: " + right,
                 node.right);
     }
@@ -572,7 +593,28 @@ public final class SemanticAnalysis
 
     private void binaryEquality (Rule r, BinaryExpressionNode node, Type left, Type right)
     {
-        r.set(0, BoolType.INSTANCE);
+        Boolean isfloat = left instanceof FloatType || right instanceof FloatType;
+        if(left instanceof ArrayType || right instanceof ArrayType)
+        {
+
+            if(left instanceof ArrayType)
+                if(((ArrayType) left).componentType instanceof FloatType)
+                    isfloat = true;
+            if(right instanceof ArrayType)
+                if(((ArrayType) right).componentType instanceof FloatType)
+                    isfloat = true;
+
+            if(isfloat)
+                r.set(0, new ArrayType(FloatType.INSTANCE));
+            else
+                r.set(0, new ArrayType(IntType.INSTANCE));
+            return;
+        }
+
+        if(isfloat)
+            r.set(0, FloatType.INSTANCE);
+        else
+            r.set(0, IntType.INSTANCE);
 
         if (!isComparableTo(left, right))
             r.errorFor(format("Trying to compare incomparable types %s and %s", left, right),
@@ -852,7 +894,7 @@ public final class SemanticAnalysis
         .using(node.condition, "type")
         .by(r -> {
             Type type = r.get(0);
-            if (!(type instanceof BoolType)) {
+            if (!((type instanceof BoolType))) {
                 r.error("If statement with a non-boolean condition of type: " + type,
                     node.condition);
             }

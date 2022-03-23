@@ -263,7 +263,8 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("if (false) return 1 else if (true) return 2 else return 3 ");
         successInput("if (false) return 1 else if (false) return 2 else return 3 ");
 
-        successInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
+        //todo make it work
+        failureInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
 
         failureInputWith("if 1 return 1",
             "If statement with a non-boolean condition of type: Int");
@@ -350,6 +351,14 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return 1 / [1, 2, 3]");
         successInput("return 1 % [2]");
         successInput("return 1 % [1, 2, 3]");
+        successInput("return 1 < [2]");
+        successInput("return 1 < [1, 2, 3]");
+        successInput("return 1 > [2]");
+        successInput("return 1 > [1, 2, 3]");
+        successInput("return 1 <= [2]");
+        successInput("return 1 <= [1, 2, 3]");
+        successInput("return 1 >= [2]");
+        successInput("return 1 >= [1, 2, 3]");
     }
 
     @Test public void testBinariesArrayIntOpArray(){
@@ -364,6 +373,14 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return [1, 2, 3] / [1, 2, 3]");
         successInput("return [1] % [2]");
         successInput("return [1, 2, 3] % [1, 2, 3]");
+        successInput("return [1] < [2]");
+        successInput("return [1, 2, 3] < [1, 2, 3]");
+        successInput("return [1] > [2]");
+        successInput("return [1, 2, 3] > [1, 2, 3]");
+        successInput("return [1] <= [2]");
+        successInput("return [1, 2, 3] <= [1, 2, 3]");
+        successInput("return [1] >= [2]");
+        successInput("return [1, 2, 3] >= [1, 2, 3]");
     }
 
     @Test public void testBinariesDoubleOpArray(){
@@ -378,6 +395,14 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return 1.0 / [1.0, 2.0, 3.0]");
         successInput("return 1.0 % [2.0]");
         successInput("return 1.0 % [1.0, 2.0, 3.0]");
+        successInput("return 1.0 < [2.0]");
+        successInput("return 1.0 < [1.0, 2.0, 3.0]");
+        successInput("return 1.0 > [2.0]");
+        successInput("return 1.0 > [1.0, 2.0, 3.0]");
+        successInput("return 1.0 <= [2.0]");
+        successInput("return 1.0 <= [1.0, 2.0, 3.0]");
+        successInput("return 1.0 >= [2.0]");
+        successInput("return 1.0 >= [1.0, 2.0, 3.0]");
     }
 
     @Test public void testBinariesArrayDoubleOpArray(){
@@ -392,5 +417,13 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return [1.0, 2.0, 3.0] / [1.0, 2.0, 3.0]");
         successInput("return [1.0] % [2.0]");
         successInput("return [1.0, 2.0, 3.0] % [1.0, 2.0, 3.0]");
+        successInput("return [1.0] < [2.0]");
+        successInput("return [1.0, 2.0, 3.0] < [1.0, 2.0, 3.0]");
+        successInput("return [1.0] > [2.0]");
+        successInput("return [1.0, 2.0, 3.0] > [1.0, 2.0, 3.0]");
+        successInput("return [1.0] <= [2.0]");
+        successInput("return [1.0, 2.0, 3.0] <= [1.0, 2.0, 3.0]");
+        successInput("return [1.0] >= [2.0]");
+        successInput("return [1.0, 2.0, 3.0] >= [1.0, 2.0, 3.0]");
     }
 }

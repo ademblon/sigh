@@ -167,6 +167,14 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("1 / [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), DIVIDE, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
         successExpect("1 % [2]", new BinaryExpressionNode(null, intlit(1), REMAINDER, new ArrayLiteralNode(null, asList(intlit(2)))));
         successExpect("1 % [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), REMAINDER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 < [2]", new BinaryExpressionNode(null, intlit(1), LOWER, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 < [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), LOWER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 > [2]", new BinaryExpressionNode(null, intlit(1), GREATER, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 > [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), GREATER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 <= [2]", new BinaryExpressionNode(null, intlit(1), LOWER_EQUAL, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 <= [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), LOWER_EQUAL, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 >= [2]", new BinaryExpressionNode(null, intlit(1), GREATER_EQUAL, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 >= [1, 2, 3]", new BinaryExpressionNode(null, intlit(1), GREATER_EQUAL, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
     }
 
     @Test public void testBinaryDoubleOpArray() {
@@ -181,6 +189,14 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("1.0 / [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), DIVIDE, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
         successExpect("1.0 % [2.0]", new BinaryExpressionNode(null, floatlit(1), REMAINDER, new ArrayLiteralNode(null, asList(floatlit(2)))));
         successExpect("1.0 % [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), REMAINDER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 < [2.0]", new BinaryExpressionNode(null, floatlit(1), LOWER, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 < [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), LOWER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 > [2.0]", new BinaryExpressionNode(null, floatlit(1), GREATER, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 > [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), GREATER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 <= [2.0]", new BinaryExpressionNode(null, floatlit(1), LOWER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 <= [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), LOWER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 >= [2.0]", new BinaryExpressionNode(null, floatlit(1), GREATER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 >= [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, floatlit(1), GREATER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
     }
 
     @Test public void testBinaryDoubleArrayOpArray() {
@@ -195,6 +211,14 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("[1.0, 2.0, 3.0] / [4.0, 5.0, 6.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),DIVIDE,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
         successExpect("[1.0] % [3.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),REMAINDER,new ArrayLiteralNode(null, asList(floatlit(3)))));
         successExpect("[1.0, 2.0, 3.0] % [4.0, 5.0, 6.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),REMAINDER,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+        successExpect("[1.0] < [2.0]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1))), LOWER, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("[1.0, 2.0, 3.0] < [1.0, 2.0, 3.0]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))), LOWER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("[1.0] > [2.0]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1))), GREATER, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("[1.0, 2.0, 3.0] > [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))), GREATER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("[1.0] <= [2.0]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1))), LOWER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("[1.0, 2.0, 3.0] <= [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))), LOWER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("[1.0] >= [2.0]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1))), GREATER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("[1.0, 2.0, 3.0] >= [1.0, 2.0, 3.0]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))), GREATER_EQUAL, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
 
     }
 
@@ -210,6 +234,14 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("[1, 2, 3] / [4, 5, 6]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),DIVIDE,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
         successExpect("[1] % [3]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),REMAINDER,new ArrayLiteralNode(null, asList(intlit(3)))));
         successExpect("[1, 2, 3] % [4, 5, 6]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),REMAINDER,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+        successExpect("[1] < [2]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1))), LOWER, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("[1, 2, 3] < [1, 2, 3]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))), LOWER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("[1] > [2]", new BinaryExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))), GREATER, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("[1, 2, 3] > [1, 2, 3]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))), GREATER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("[1] <= [2]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1))), LOWER_EQUAL, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("[1, 2, 3] <= [1, 2, 3]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))), LOWER_EQUAL, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("[1] >= [2]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1))), GREATER_EQUAL, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("[1, 2, 3] >= [1, 2, 3]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))), GREATER_EQUAL, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
     }
 
 }
