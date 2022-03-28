@@ -180,7 +180,7 @@ public final class Interpreter {
             return convertToString(left) + convertToString(right);
 
         boolean floating = leftType instanceof FloatType || rightType instanceof FloatType;
-        boolean numeric = floating || leftType instanceof IntType;
+        boolean numeric = floating || leftType instanceof IntType || rightType instanceof IntType;
         boolean array = leftType instanceof ArrayType || rightType instanceof ArrayType;
 
         if (array)

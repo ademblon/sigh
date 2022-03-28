@@ -60,6 +60,9 @@ public class SighGrammar extends Grammar
     public rule _while          = reserved("while");
     public rule _return         = reserved("return");
 
+    public rule GRAB_LAST       = word("{:");
+    public rule SUM_SLASH       = word("+/");
+
     public rule number =
         seq(opt('-'), choice('0', digit.at_least(1)));
 
@@ -137,9 +140,15 @@ public class SighGrammar extends Grammar
         .suffix(function_args,
             $ -> new FunCallNode($.span(), $.$[0], $.$[1]));
 
+    public rule monadic_verb = choice(
+        GRAB_LAST   .as_val(UnaryOperator.GRAB_LAST),
+        SUM_SLASH   .as_val(UnaryOperator.SUM_SLASH),
+        BANG        .as_val(NOT)
+    );
+
     public rule prefix_expression = right_expression()
         .operand(suffix_expression)
-        .prefix(BANG.as_val(NOT),
+        .prefix(monadic_verb,
             $ -> new UnaryExpressionNode($.span(), $.$[0], $.$[1]));
 
     public rule mult_op = choice(
@@ -168,6 +177,15 @@ public class SighGrammar extends Grammar
         .infix(cmp_op,
             $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
 
+    /*public rule concatenate_expr = left_expression()
+        .operand(order_expr)
+        .infix(COMMA.as_val(BinaryOperator.APPEND),
+            $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));*/
+
+    //rajouter la , et voir comment on traite les opérateurs (tous égaux ?)
+    //comment envisager le fork ?
+
+    /*
     public rule and_expression = left_expression()
         .operand(order_expr)
         .infix(AMP_AMP.as_val(BinaryOperator.AND),
@@ -182,9 +200,9 @@ public class SighGrammar extends Grammar
         .operand(or_expression)
         .infix(EQUALS,
             $ -> new AssignmentNode($.span(), $.$[0], $.$[1]));
-
+*/
     public rule expression =
-        seq(assignment_expression);
+        seq(order_expr);
 
     public rule expression_stmt =
         expression

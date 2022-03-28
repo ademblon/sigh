@@ -8,6 +8,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static norswap.sigh.ast.BinaryOperator.*;
+import static norswap.sigh.ast.UnaryOperator.*;
 
 public class GrammarTests extends AutumnTestFixture {
     // ---------------------------------------------------------------------------------------------
@@ -58,6 +59,18 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("2.0 * 3.0", new BinaryExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3)));
         successExpect("2.0 / 3.0", new BinaryExpressionNode(null, floatlit(2), DIVIDE, floatlit(3)));
         successExpect("2.0 % 3.0", new BinaryExpressionNode(null, floatlit(2), REMAINDER, floatlit(3)));
+
+        successExpect("1.0 + 2", new BinaryExpressionNode(null, floatlit(1), ADD, intlit(2)));
+        successExpect("2.0 - 1", new BinaryExpressionNode(null, floatlit(2), SUBTRACT, intlit(1)));
+        successExpect("2.0 * 3", new BinaryExpressionNode(null, floatlit(2), MULTIPLY, intlit(3)));
+        successExpect("2.0 / 3", new BinaryExpressionNode(null, floatlit(2), DIVIDE, intlit(3)));
+        successExpect("2.0 % 3", new BinaryExpressionNode(null, floatlit(2), REMAINDER, intlit(3)));
+
+        successExpect("1 + 2.0", new BinaryExpressionNode(null, intlit(1), ADD, floatlit(2)));
+        successExpect("2 - 1.0", new BinaryExpressionNode(null, intlit(2), SUBTRACT, floatlit(1)));
+        successExpect("2 * 3.0", new BinaryExpressionNode(null, intlit(2), MULTIPLY, floatlit(3)));
+        successExpect("2 / 3.0", new BinaryExpressionNode(null, intlit(2), DIVIDE, floatlit(3)));
+        successExpect("2 % 3.0", new BinaryExpressionNode(null, intlit(2), REMAINDER, floatlit(3)));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -242,6 +255,12 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("[1, 2, 3] <= [1, 2, 3]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))), LOWER_EQUAL, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
         successExpect("[1] >= [2]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1))), GREATER_EQUAL, new ArrayLiteralNode(null, asList(intlit(2)))));
         successExpect("[1, 2, 3] >= [1, 2, 3]", new BinaryExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))), GREATER_EQUAL, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+    }
+
+    @Test public void testMonadicVerb() {
+        rule = grammar.expression;
+        successExpect("+/ [1, 2, 3]", new UnaryExpressionNode(null, SUM_SLASH, new ArrayLiteralNode(null, asList(intlit(1), intlit(2), intlit(3)))));
+        successExpect("{: [1, 2, 3]", new UnaryExpressionNode(null, GRAB_LAST, new ArrayLiteralNode(null, asList(intlit(1), intlit(2), intlit(3)))));
     }
 
 }

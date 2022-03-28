@@ -2,7 +2,9 @@ package norswap.sigh.ast;
 
 public enum UnaryOperator
 {
-    NOT("!");
+    NOT("!"),
+    GRAB_LAST("{:"),
+    SUM_SLASH("+/");
 
     public final String string;
 
