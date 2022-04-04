@@ -15,7 +15,6 @@ import norswap.utils.Util;
 import norswap.utils.exceptions.Exceptions;
 import norswap.utils.exceptions.NoStackException;
 import norswap.utils.visitors.ValuedVisitor;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,8 +71,8 @@ public final class Interpreter {
         visitor.register(FieldAccessNode.class, this::fieldAccess);
         visitor.register(ArrayAccessNode.class, this::arrayAccess);
         visitor.register(FunCallNode.class, this::funCall);
-        visitor.register(UnaryExpressionNode.class, this::unaryExpression);
-        visitor.register(BinaryExpressionNode.class, this::binaryExpression);
+        visitor.register(MonadicExpressionNode.class, this::monadicExpression);
+        visitor.register(DiadicExpressionNode.class, this::diadicExpression);
         visitor.register(AssignmentNode.class, this::assignment);
 
         // statement groups & declarations
@@ -160,7 +159,7 @@ public final class Interpreter {
 
     // ---------------------------------------------------------------------------------------------
 
-    private Object binaryExpression (BinaryExpressionNode node) {
+    private Object diadicExpression (DiadicExpressionNode node) {
         Type leftType = reactor.get(node.left, "type");
         Type rightType = reactor.get(node.right, "type");
 
@@ -175,7 +174,7 @@ public final class Interpreter {
         Object left = get(node.left);
         Object right = get(node.right);
 
-        if (node.operator == BinaryOperator.ADD
+        if (node.operator == DiadicOperator.ADD
             && (leftType instanceof StringType || rightType instanceof StringType))
             return convertToString(left) + convertToString(right);
 
@@ -200,7 +199,7 @@ public final class Interpreter {
 
     // ---------------------------------------------------------------------------------------------
 
-    private boolean booleanOp (BinaryExpressionNode node, boolean isAnd) {
+    private boolean booleanOp (DiadicExpressionNode node, boolean isAnd) {
         boolean left = get(node.left);
         return isAnd
             ? left && (boolean) get(node.right)
@@ -210,7 +209,7 @@ public final class Interpreter {
     // ---------------------------------------------------------------------------------------------
 
     private Object numericOp
-        (BinaryExpressionNode node, boolean floating, Number left, Number right) {
+        (DiadicExpressionNode node, boolean floating, Number left, Number right) {
         long ileft, iright;
         double fleft, fright;
 
@@ -340,9 +339,9 @@ public final class Interpreter {
 
     // ---------------------------------------------------------------------------------------------
 
-    private Object unaryExpression (UnaryExpressionNode node) {
+    private Object monadicExpression (MonadicExpressionNode node) {
         // there is only NOT
-        assert node.operator == UnaryOperator.NOT;
+        assert node.operator == MonadicOperator.NOT;
         return !(boolean) get(node.operand);
     }
 
@@ -541,7 +540,7 @@ public final class Interpreter {
     // ------------------------------------ new functions ------------------------------------------
 
     private Object arrayOp
-        (BinaryExpressionNode node, Object left, Object right, Type leftType, Type rightType) {
+        (DiadicExpressionNode node, Object left, Object right, Type leftType, Type rightType) {
         long[] aileft = new long[10000];
         long[] airight = new long[10000];
         double[] afleft = new double[10000];
@@ -666,7 +665,7 @@ public final class Interpreter {
         return Result;
     }
 
-    private Object getval (BinaryExpressionNode node, Boolean floating, long ileft, long iright, double fleft, double fright) {
+    private Object getval (DiadicExpressionNode node, Boolean floating, long ileft, long iright, double fleft, double fright) {
         if (floating)
             switch (node.operator) {
                 case MULTIPLY:

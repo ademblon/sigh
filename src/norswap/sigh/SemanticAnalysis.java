@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static java.lang.String.format;
-import static norswap.sigh.ast.BinaryOperator.*;
+import static norswap.sigh.ast.DiadicOperator.*;
 import static norswap.utils.Util.cast;
 import static norswap.utils.Vanilla.forEachIndexed;
 import static norswap.utils.Vanilla.list;
@@ -119,8 +119,8 @@ public final class SemanticAnalysis
         walker.register(FieldAccessNode.class,          PRE_VISIT,  analysis::fieldAccess);
         walker.register(ArrayAccessNode.class,          PRE_VISIT,  analysis::arrayAccess);
         walker.register(FunCallNode.class,              PRE_VISIT,  analysis::funCall);
-        walker.register(UnaryExpressionNode.class,      PRE_VISIT,  analysis::unaryExpression);
-        walker.register(BinaryExpressionNode.class,     PRE_VISIT,  analysis::binaryExpression);
+        walker.register(MonadicExpressionNode.class,      PRE_VISIT,  analysis::unaryExpression);
+        walker.register(DiadicExpressionNode.class,     PRE_VISIT,  analysis::binaryExpression);
         walker.register(AssignmentNode.class,           PRE_VISIT,  analysis::assignment);
 
         // types
@@ -440,9 +440,9 @@ public final class SemanticAnalysis
 
     // ---------------------------------------------------------------------------------------------
 
-    private void unaryExpression (UnaryExpressionNode node)
+    private void unaryExpression (MonadicExpressionNode node)
     {
-        assert node.operator == UnaryOperator.NOT; // only one for now
+        assert node.operator == MonadicOperator.NOT; // only one for now
         R.set(node, "type", BoolType.INSTANCE);
 
         R.rule()
@@ -459,7 +459,7 @@ public final class SemanticAnalysis
     // region [Binary Expressions]
     // =============================================================================================
 
-    private void binaryExpression (BinaryExpressionNode node)
+    private void binaryExpression (DiadicExpressionNode node)
     {
         R.rule(node, "type")
         .using(node.left.attr("type"), node.right.attr("type"))
@@ -482,25 +482,25 @@ public final class SemanticAnalysis
 
     // ---------------------------------------------------------------------------------------------
 
-    private boolean isArithmetic (BinaryOperator op) {
+    private boolean isArithmetic (DiadicOperator op) {
         return op == ADD || op == MULTIPLY || op == SUBTRACT || op == DIVIDE || op == REMAINDER;
     }
 
-    private boolean isComparison (BinaryOperator op) {
+    private boolean isComparison (DiadicOperator op) {
         return op == GREATER || op == GREATER_EQUAL || op == LOWER || op == LOWER_EQUAL;
     }
 
-    private boolean isLogic (BinaryOperator op) {
+    private boolean isLogic (DiadicOperator op) {
         return op == OR || op == AND;
     }
 
-    private boolean isEquality (BinaryOperator op) {
+    private boolean isEquality (DiadicOperator op) {
         return op == EQUALITY || op == NOT_EQUALS;
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    private void binaryArithmetic (Rule r, BinaryExpressionNode node, Type left, Type right)
+    private void binaryArithmetic (Rule r, DiadicExpressionNode node, Type left, Type right)
     {
         if (left instanceof ArrayType || right instanceof ArrayType)
         {
@@ -550,13 +550,13 @@ public final class SemanticAnalysis
 
     // ---------------------------------------------------------------------------------------------
 
-    private static String arithmeticError (BinaryExpressionNode node, Object left, Object right) {
+    private static String arithmeticError (DiadicExpressionNode node, Object left, Object right) {
         return format("Trying to %s %s with %s", node.operator.name().toLowerCase(), left, right);
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    private void binaryComparison (Rule r, BinaryExpressionNode node, Type left, Type right)
+    private void binaryComparison (Rule r, DiadicExpressionNode node, Type left, Type right)
     {
         Boolean isfloat = left instanceof FloatType || right instanceof FloatType;
         if(left instanceof ArrayType || right instanceof ArrayType)
@@ -591,7 +591,7 @@ public final class SemanticAnalysis
 
     // ---------------------------------------------------------------------------------------------
 
-    private void binaryEquality (Rule r, BinaryExpressionNode node, Type left, Type right)
+    private void binaryEquality (Rule r, DiadicExpressionNode node, Type left, Type right)
     {
         Boolean isfloat = left instanceof FloatType || right instanceof FloatType;
         if(left instanceof ArrayType || right instanceof ArrayType)
@@ -623,7 +623,7 @@ public final class SemanticAnalysis
 
     // ---------------------------------------------------------------------------------------------
 
-    private void binaryLogic (Rule r, BinaryExpressionNode node, Type left, Type right)
+    private void binaryLogic (Rule r, DiadicExpressionNode node, Type left, Type right)
     {
         r.set(0, BoolType.INSTANCE);
 

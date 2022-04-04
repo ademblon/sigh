@@ -3,15 +3,15 @@ package norswap.sigh.ast;
 import norswap.autumn.positions.Span;
 import norswap.utils.Util;
 
-public final class UnaryExpressionNode extends ExpressionNode
+public final class MonadicExpressionNode extends ExpressionNode
 {
     public final ExpressionNode operand;
-    public final UnaryOperator operator;
+    public final MonadicOperator operator;
 
-    public UnaryExpressionNode (Span span, Object operator, Object operand) {
+    public MonadicExpressionNode (Span span, Object operator, Object operand) {
         super(span);
         this.operand = Util.cast(operand, ExpressionNode.class);
-        this.operator = Util.cast(operator, UnaryOperator.class);
+        this.operator = Util.cast(operator, MonadicOperator.class);
     }
 
     @Override public String contents ()

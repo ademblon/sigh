@@ -3,8 +3,6 @@ package norswap.sigh;
 import norswap.autumn.Grammar;
 import norswap.sigh.ast.*;
 
-import static norswap.sigh.ast.UnaryOperator.NOT;
-
 @SuppressWarnings("Convert2MethodRef")
 public class SighGrammar extends Grammar
 {
@@ -62,6 +60,9 @@ public class SighGrammar extends Grammar
 
     public rule GRAB_LAST       = word("{:");
     public rule SUM_SLASH       = word("+/");
+    public rule MULT_SLASH      = word("./");
+    public rule DIV_SLASH       = word(":/");
+    public rule MIN_SLASH       = word("-/");
 
     public rule number =
         seq(opt('-'), choice('0', digit.at_least(1)));
@@ -111,6 +112,10 @@ public class SighGrammar extends Grammar
         seq(LPAREN, this.expression, RPAREN)
         .push($ -> new ParenthesizedNode($.span(), $.$[0])));
 
+    public rule monadic_fork_expression = lazy(() ->
+        seq(LPAREN, this.monadic_verb, this.diadic_verb, this.monadic_verb, RPAREN, this.expression)
+        .push($ -> new MonadicForkNode($.span(), $.$[0], $.$[1], $.$[2], $.$[3])));
+
     public rule expressions = lazy(() ->
         this.expression.sep(0, COMMA)
         .as_list(ExpressionNode.class));
@@ -126,6 +131,7 @@ public class SighGrammar extends Grammar
         integer,
         string,
         paren_expression,
+        monadic_fork_expression,
         array);
 
     public rule function_args =
@@ -140,69 +146,48 @@ public class SighGrammar extends Grammar
         .suffix(function_args,
             $ -> new FunCallNode($.span(), $.$[0], $.$[1]));
 
+    public rule diadic_verb = choice(
+        STAR        .as_val(DiadicOperator.MULTIPLY),
+        SLASH       .as_val(DiadicOperator.DIVIDE),
+        PERCENT     .as_val(DiadicOperator.REMAINDER),
+        PLUS        .as_val(DiadicOperator.ADD),
+        MINUS       .as_val(DiadicOperator.SUBTRACT),
+        EQUALS_EQUALS.as_val(DiadicOperator.EQUALITY),
+        BANG_EQUAL  .as_val(DiadicOperator.NOT_EQUALS),
+        LANGLE_EQUAL.as_val(DiadicOperator.LOWER_EQUAL),
+        RANGLE_EQUAL.as_val(DiadicOperator.GREATER_EQUAL),
+        LANGLE      .as_val(DiadicOperator.LOWER),
+        RANGLE      .as_val(DiadicOperator.GREATER));
+
     public rule monadic_verb = choice(
-        GRAB_LAST   .as_val(UnaryOperator.GRAB_LAST),
-        SUM_SLASH   .as_val(UnaryOperator.SUM_SLASH),
-        BANG        .as_val(NOT)
+        GRAB_LAST   .as_val(MonadicOperator.GRAB_LAST),
+        SUM_SLASH   .as_val(MonadicOperator.SUM_SLASH),
+        MULT_SLASH  .as_val(MonadicOperator.MULT_SLASH),
+        DIV_SLASH   .as_val(MonadicOperator.DIV_SLASH),
+        MIN_SLASH   .as_val(MonadicOperator.MIN_SLASH),
+        BANG        .as_val(MonadicOperator.NOT)
     );
 
-    public rule prefix_expression = right_expression()
+    public rule diadic_fork_op = lazy(() ->
+        seq(LPAREN, diadic_verb, diadic_verb, diadic_verb, RPAREN));
+
+    public rule monadic_expression = right_expression()
         .operand(suffix_expression)
         .prefix(monadic_verb,
-            $ -> new UnaryExpressionNode($.span(), $.$[0], $.$[1]));
+            $ -> new MonadicExpressionNode($.span(), $.$[0], $.$[1]));
 
-    public rule mult_op = choice(
-        STAR        .as_val(BinaryOperator.MULTIPLY),
-        SLASH       .as_val(BinaryOperator.DIVIDE),
-        PERCENT     .as_val(BinaryOperator.REMAINDER),
-        PLUS        .as_val(BinaryOperator.ADD),
-        MINUS       .as_val(BinaryOperator.SUBTRACT));
+    public rule diadic_expression = right_expression()
+        .operand(monadic_expression)
+        .infix(diadic_verb,
+            $ -> new DiadicExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
 
+    public rule diadic_fork_expression = right_expression()
+        .operand(diadic_expression)
+        .infix(diadic_fork_op,
+            $ -> new DiadicForkNode($.span(), $.$[0], $.$[1], $.$[2], $.$[3], $.$[4]));
 
-    public rule cmp_op = choice(
-        EQUALS_EQUALS.as_val(BinaryOperator.EQUALITY),
-        BANG_EQUAL  .as_val(BinaryOperator.NOT_EQUALS),
-        LANGLE_EQUAL.as_val(BinaryOperator.LOWER_EQUAL),
-        RANGLE_EQUAL.as_val(BinaryOperator.GREATER_EQUAL),
-        LANGLE      .as_val(BinaryOperator.LOWER),
-        RANGLE      .as_val(BinaryOperator.GREATER));
-
-    public rule mult_expr = right_expression()
-        .operand(prefix_expression)
-        .infix(mult_op,
-            $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
-
-    public rule order_expr = left_expression()
-        .operand(mult_expr)
-        .infix(cmp_op,
-            $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
-
-    /*public rule concatenate_expr = left_expression()
-        .operand(order_expr)
-        .infix(COMMA.as_val(BinaryOperator.APPEND),
-            $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));*/
-
-    //rajouter la , et voir comment on traite les opérateurs (tous égaux ?)
-    //comment envisager le fork ?
-
-    /*
-    public rule and_expression = left_expression()
-        .operand(order_expr)
-        .infix(AMP_AMP.as_val(BinaryOperator.AND),
-            $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
-
-    public rule or_expression = left_expression()
-        .operand(and_expression)
-        .infix(BAR_BAR.as_val(BinaryOperator.OR),
-            $ -> new BinaryExpressionNode($.span(), $.$[0], $.$[1], $.$[2]));
-
-    public rule assignment_expression = right_expression()
-        .operand(or_expression)
-        .infix(EQUALS,
-            $ -> new AssignmentNode($.span(), $.$[0], $.$[1]));
-*/
     public rule expression =
-        seq(order_expr);
+        seq(diadic_fork_expression);
 
     public rule expression_stmt =
         expression

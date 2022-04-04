@@ -3,16 +3,16 @@ package norswap.sigh.ast;
 import norswap.autumn.positions.Span;
 import norswap.utils.Util;
 
-public final class BinaryExpressionNode extends ExpressionNode
+public final class DiadicExpressionNode extends ExpressionNode
 {
     public final ExpressionNode left, right;
-    public final BinaryOperator operator;
+    public final DiadicOperator operator;
 
-    public BinaryExpressionNode (Span span, Object left, Object operator, Object right) {
+    public DiadicExpressionNode (Span span, Object left, Object operator, Object right) {
         super(span);
         this.left = Util.cast(left, ExpressionNode.class);
         this.right = Util.cast(right, ExpressionNode.class);
-        this.operator = Util.cast(operator, BinaryOperator.class);
+        this.operator = Util.cast(operator, DiadicOperator.class);
     }
 
     @Override public String contents ()

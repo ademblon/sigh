@@ -1,6 +1,6 @@
 package norswap.sigh.ast;
 
-public enum BinaryOperator
+public enum DiadicOperator
 {
     MULTIPLY("*"),
     DIVIDE("/"),
@@ -14,12 +14,11 @@ public enum BinaryOperator
     GREATER_EQUAL(">="),
     LOWER_EQUAL("<="),
     AND("&&"),
-    APPEND(","),
     OR("||");
 
     public final String string;
 
-    BinaryOperator (String string) {
+    DiadicOperator (String string) {
         this.string = string;
     }
 }

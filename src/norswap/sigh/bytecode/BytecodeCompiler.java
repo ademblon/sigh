@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static norswap.sigh.ast.BinaryOperator.*;
+import static norswap.sigh.ast.DiadicOperator.*;
 import static norswap.sigh.bytecode.AsmUtils.*;
 import static norswap.sigh.bytecode.TypeUtils.fieldDescriptor;
 import static norswap.sigh.bytecode.TypeUtils.methodDescriptor;
@@ -96,8 +96,8 @@ public class BytecodeCompiler
         visitor.register(FieldAccessNode.class,          this::fieldAccess);
         visitor.register(ArrayAccessNode.class,          this::arrayAccess);
         visitor.register(FunCallNode.class,              this::funCall);
-        visitor.register(UnaryExpressionNode.class,      this::unaryExpression);
-        visitor.register(BinaryExpressionNode.class,     this::binaryExpression);
+        visitor.register(MonadicExpressionNode.class,      this::unaryExpression);
+        visitor.register(DiadicExpressionNode.class,     this::binaryExpression);
         visitor.register(AssignmentNode.class,           this::assignment);
 
         // statement groups & declarations
@@ -309,7 +309,7 @@ public class BytecodeCompiler
 
     // ---------------------------------------------------------------------------------------------
 
-    private Object binaryExpression (BinaryExpressionNode node)
+    private Object binaryExpression (DiadicExpressionNode node)
     {
         if (isShortCircuit(node.operator))
             return shortCircuit(node);
@@ -367,29 +367,29 @@ public class BytecodeCompiler
 
     // ---------------------------------------------------------------------------------------------
 
-    private boolean enablesPromotion (BinaryOperator op) {
+    private boolean enablesPromotion (DiadicOperator op) {
         return isArithmetic(op) || isComparison(op) || isEquality(op);
     }
 
-    private boolean isShortCircuit (BinaryOperator op) {
+    private boolean isShortCircuit (DiadicOperator op) {
         return op == AND || op == OR;
     }
 
-    private boolean isArithmetic (BinaryOperator op) {
+    private boolean isArithmetic (DiadicOperator op) {
         return op == ADD || op == MULTIPLY || op == SUBTRACT || op == DIVIDE || op == REMAINDER;
     }
 
-    private boolean isComparison (BinaryOperator op) {
+    private boolean isComparison (DiadicOperator op) {
         return op == GREATER || op == GREATER_EQUAL || op == LOWER || op == LOWER_EQUAL;
     }
 
-    private boolean isEquality (BinaryOperator op) {
+    private boolean isEquality (DiadicOperator op) {
         return op == EQUALITY || op == NOT_EQUALS;
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    private Object shortCircuit (BinaryExpressionNode node)
+    private Object shortCircuit (DiadicExpressionNode node)
     {
         int opcode = node.operator == AND ? IFEQ /* if 0 */ : /* OR */ IFNE /* if 1 */;
         Label endLabel = new Label();
@@ -460,7 +460,7 @@ public class BytecodeCompiler
     // ---------------------------------------------------------------------------------------------
 
     private void comparison (
-            BinaryOperator op,
+            DiadicOperator op,
             int doubleWidthOpcode, int boolOpcode, int objOpcode,
             Type left, Type right) {
 
@@ -497,10 +497,10 @@ public class BytecodeCompiler
 
     // ---------------------------------------------------------------------------------------------
 
-    private Object unaryExpression (UnaryExpressionNode node)
+    private Object unaryExpression (MonadicExpressionNode node)
     {
         // there is only NOT
-        assert node.operator == UnaryOperator.NOT;
+        assert node.operator == MonadicOperator.NOT;
 
         run(node.operand);
         Label falseLabel = new Label();
