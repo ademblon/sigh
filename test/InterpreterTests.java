@@ -552,6 +552,86 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ 1.1",1.1d);
         checkExpr(":/ 1.1",1.1d);
         checkExpr("-/ 1.1",1.1d);
-        checkExpr("! 1.5",1.3293403881791384d);
+        checkExpr(" ! 1.5",1.3293403881791384d);
     }
+
+    @Test
+    public void testMonadicForkExpressionIntArray () {
+
+        checkExpr("(+/ + {:) [1, 2, 3]", 9L);
+        checkExpr("(! + !) [1, 3, 5]", new Object[]{2L,12L, 240L});
+        checkExpr("(./ / {:) [1, 2, 3]", 2L);
+        checkExpr("({: % -/) [1, 2, 3]", 1L);
+        checkExpr("(./ + !) [1, 3, 5]", new Object[]{16L,21L, 135L});
+    }
+
+    @Test
+    public void testMonadicForkExpressionInt () {
+
+        checkExpr("(+/ + {:) 2", 4L);
+        checkExpr("(! + !) 2", 4L);
+        checkExpr("(./ / {:) 2", 1L);
+        checkExpr("({: % -/) 2", 0L);
+        checkExpr("(./ + !) 2", 4L);
+    }
+
+    @Test
+    public void testMonadicForkExpressionDoubleArray () {
+
+        checkExpr("(+/ + {:) [1.0, 2.0, 3.0]", 9d);
+        checkExpr("(! + !) [1.0, 3.0, 5.0]",new Object[]{2.0000000000000004d, 12.000000000000014d, 240.00000000000043d});
+        checkExpr("(./ / {:) [1.0, 2.0, 3.0]", 2d);
+        checkExpr("({: % -/) [1.0, 2.0, 3.0]", 1d);
+    }
+
+    @Test
+    public void testMonadicForkExpressionDouble () {
+
+        checkExpr("(+/ + {:) 2.0", 4d);
+        checkExpr("(! + !) 1.0", 2.0000000000000004d);
+        checkExpr("(./ / {:) 2.0", 1d);
+        checkExpr("({: % -/) 2.0", 0d);
+        checkExpr("(./ + {:) 2.0", 4d);
+    }
+
+    @Test
+    public void testDiadicForkExpressionIntArrayArray () {
+
+        checkExpr("[1, 2] (+ - *) [1, 2]", new Object[]{1L,0L});
+        checkExpr("[1, 2] (/ + %) [1, 2]", new Object[]{1L,1L});
+        checkExpr("[1, 2] (+ * +) [1, 2]", new Object[]{4L,16L});
+        checkExpr("[1, 2] (- / /) [1, 2]", new Object[]{0L,0L});
+
+    }
+
+    @Test
+    public void testDiadicForkExpressionInt () {
+
+        checkExpr("1 (+ - *) 2", 1L);
+        checkExpr("1 (/ + %) 2",1L);
+        checkExpr("1 (+ * +) 2", 9L);
+        checkExpr("3 (- / /) 2", 1L);
+
+    }
+
+    @Test
+    public void testDiadicForkExpressionDoubleArrayArray () {
+
+        checkExpr("[1.0, 2.0] (+ - *) [1.0, 2.0]", new Object[]{1d,0d});
+        checkExpr("[1.0, 2.0] (/ + %) [1.0, 2.0]", new Object[]{1d,1d});
+        checkExpr("[1.0, 2.0] (+ * +) [1.0, 2.0]", new Object[]{4d,16d});
+        checkExpr("[1.0, 2.0] (- / /) [1.0, 2.0]", new Object[]{0d,0d});
+
+    }
+
+    @Test
+    public void testDiadicForkExpressionDouble () {
+
+        checkExpr("1.0 (+ - *) 2.0", 1d);
+        checkExpr("1.0 (/ + %) 2.0",1.5d);
+        checkExpr("1.0 (+ * +) 2.0", 9d);
+        checkExpr("4.0 (- / /) 2.0", 1d);
+
+    }
+
 }

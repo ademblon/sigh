@@ -121,6 +121,8 @@ public final class SemanticAnalysis
         walker.register(FunCallNode.class,              PRE_VISIT,  analysis::funCall);
         walker.register(MonadicExpressionNode.class,      PRE_VISIT,  analysis::unaryExpression);
         walker.register(DiadicExpressionNode.class,     PRE_VISIT,  analysis::binaryExpression);
+        walker.register(MonadicForkNode.class,     PRE_VISIT,  analysis::monadicforkexpression);
+        walker.register(DiadicForkNode.class,     PRE_VISIT,  analysis::diadicforkexpression);
         walker.register(AssignmentNode.class,           PRE_VISIT,  analysis::assignment);
 
         // types
@@ -442,17 +444,6 @@ public final class SemanticAnalysis
 
     private void unaryExpression (MonadicExpressionNode node)
     {
-        /*
-        assert node.operator == MonadicOperator.NOT; // only one for now
-        R.set(node, "type", BoolType.INSTANCE);
-
-        R.rule()
-        .using(node.operand, "type")
-        .by(r -> {
-            Type opType = r.get(0);
-            if (!(opType instanceof BoolType))
-                r.error("Trying to negate type: " + opType, node);
-        }); */
 
         R.rule(node, "type")
             .using(node.operand, "type")
@@ -1024,4 +1015,124 @@ public final class SemanticAnalysis
 
     // endregion
     // =============================================================================================
+
+    private void monadicforkexpression(MonadicForkNode node)
+    {
+        R.rule(node, "type")
+            .using(node.operand, "type")
+            .by(r -> {
+                Type opType = r.get(0);
+                if(opType instanceof ArrayType)
+                {
+                    if(((ArrayType) opType).componentType instanceof IntType)
+                    {
+                        r.set(0, new ArrayType(IntType.INSTANCE));
+                    }
+                    else if(((ArrayType) opType).componentType instanceof FloatType)
+                    {
+                        r.set(0, new ArrayType(FloatType.INSTANCE));
+                    }
+                    else
+                    {
+                        //todo change this
+                        r.error(format("Error Unary, not correct array type : %s %s",node.operatorM.name().toLowerCase(),opType), node);
+                    }
+
+                }
+                else if( opType instanceof IntType)
+                {
+                    r.set(0, IntType.INSTANCE);
+                }
+                else if(opType instanceof FloatType)
+                {
+                    r.set(0, FloatType.INSTANCE);
+                }
+
+                else if (!(opType instanceof BoolType))
+                    r.error("Trying to negate type: " + opType, node);
+            });
+    }
+
+    private void diadicforkexpression(DiadicForkNode node)
+    {
+        R.rule(node, "type")
+            .using(node.operandL.attr("type"), node.operandR.attr("type"))
+            .by(r -> {
+                Type left  = r.get(0);
+                Type right = r.get(1);
+
+                boolean iscorrect = isCorrect(left) && isCorrect(right);
+
+                boolean isFloat = isFloat(left) || isFloat(right);
+
+                boolean isInt = isInt(left) && isInt(right);
+
+                boolean isArray = isArray(left) || isArray(right);
+
+                if(!iscorrect)
+                {
+                    r.error(format("Error diadic, not correct type : %s %s",left,right), node);
+                }
+
+                if(isArray)
+                {
+                    if(isFloat)
+                    {
+                        r.set(0, new ArrayType(FloatType.INSTANCE));
+                    }
+                    else if (isInt)
+                    {
+                        r.set(0, new ArrayType(IntType.INSTANCE));
+                    }
+                }
+                else if(isFloat){
+                    r.set(0, FloatType.INSTANCE);
+                }
+                else if(isInt){
+                    r.set(0, IntType.INSTANCE);
+                }
+                else
+                {
+                    throw new Error("Should not reach here");
+                }
+            });
+    }
+
+    private boolean isFloat(Type type)
+    {
+        if(type instanceof FloatType)
+            return true;
+        if(type instanceof ArrayType) {
+            if (((ArrayType) type).componentType instanceof FloatType)
+                return true;
+        }
+        return false;
+    }
+    private boolean isCorrect(Type type)
+    {
+        if(type instanceof FloatType || type instanceof IntType)
+            return true;
+        if(type instanceof ArrayType) {
+            if (((ArrayType) type).componentType instanceof FloatType || ((ArrayType) type).componentType instanceof IntType)
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isInt(Type type)
+    {
+        if(type instanceof IntType)
+            return true;
+        if(type instanceof ArrayType) {
+            if (((ArrayType) type).componentType instanceof IntType)
+                return true;
+        }
+        return false;
+    }
+    private boolean isArray(Type type)
+    {
+        if(type instanceof ArrayType)
+                return true;
+        return false;
+    }
 }

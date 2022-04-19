@@ -2,11 +2,19 @@ import norswap.autumn.AutumnTestFixture;
 import norswap.autumn.positions.LineMapString;
 import norswap.sigh.SemanticAnalysis;
 import norswap.sigh.SighGrammar;
+import norswap.sigh.ast.ArrayLiteralNode;
+import norswap.sigh.ast.MonadicForkNode;
 import norswap.sigh.ast.SighNode;
 import norswap.uranium.Reactor;
 import norswap.uranium.UraniumTestFixture;
 import norswap.utils.visitors.Walker;
 import org.testng.annotations.Test;
+
+import static java.util.Arrays.asList;
+import static norswap.sigh.ast.DiadicOperator.*;
+import static norswap.sigh.ast.DiadicOperator.REMAINDER;
+import static norswap.sigh.ast.MonadicOperator.*;
+import static norswap.sigh.ast.MonadicOperator.GRAB_LAST;
 
 /**
  * NOTE(norswap): These tests were derived from the {@link InterpreterTests} and don't test anything
@@ -473,5 +481,24 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return 2 + -/ [4.5, 3.5]");
         successInput("return 2.7 + ./ [1.0, 2.0, 3.0]");
     }
+
+    @Test public void testMonadicFork(){
+
+        successInput("return (+/ + {:) [1, 2]");
+        successInput("return ({: + {:) [1, 2]");
+        successInput("return (:/ / +/) [1, 2]");
+        successInput("return (-/ * ./) [1, 2]");
+        successInput("return (+/ % {:) [1, 2]");
+    }
+
+    @Test public void testDiadicFork(){
+
+        successInput("return [1, 3] (* - +) [1, 2]");
+        successInput("return 1 (/ + %) 2");
+        successInput("return [1, 2, 3] (+ * +) 1");
+        successInput("return (-/ * ./) [1, 2]");
+        successInput("return 4 (- / /) [1, 4, 2]");
+    }
+
 
 }

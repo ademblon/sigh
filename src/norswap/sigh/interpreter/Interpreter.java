@@ -73,6 +73,8 @@ public final class Interpreter {
         visitor.register(FunCallNode.class, this::funCall);
         visitor.register(MonadicExpressionNode.class, this::monadicExpression);
         visitor.register(DiadicExpressionNode.class, this::diadicExpression);
+        visitor.register(MonadicForkNode.class, this::monadicForkExpression);
+        visitor.register(DiadicForkNode.class, this::diadicForkExpression);
         visitor.register(AssignmentNode.class, this::assignment);
 
         // statement groups & declarations
@@ -163,18 +165,25 @@ public final class Interpreter {
         Type leftType = reactor.get(node.left, "type");
         Type rightType = reactor.get(node.right, "type");
 
-        // Cases where both operands should not be evaluated.
-        switch (node.operator) {
-            case OR:
-                return booleanOp(node, false);
-            case AND:
-                return booleanOp(node, true);
-        }
-
         Object left = get(node.left);
         Object right = get(node.right);
 
-        if (node.operator == DiadicOperator.ADD
+        DiadicOperator operator = node.operator;
+
+        return diadicExpressionCalculate(leftType,rightType,left,right,operator);
+    }
+    
+    private Object diadicExpressionCalculate(Type leftType, Type rightType, Object left, Object right, DiadicOperator operator)
+    {
+        // Cases where both operands should not be evaluated.
+        switch (operator) {
+            case OR:
+                return booleanOp(left,right, false);
+            case AND:
+                return booleanOp(left,right, true);
+        }
+        
+        if (operator == DiadicOperator.ADD
             && (leftType instanceof StringType || rightType instanceof StringType))
             return convertToString(left) + convertToString(right);
 
@@ -183,11 +192,11 @@ public final class Interpreter {
         boolean array = leftType instanceof ArrayType || rightType instanceof ArrayType;
 
         if (array)
-            return arrayOp(node, left, right, leftType, rightType);
+            return arrayOp(operator, left, right, leftType, rightType);
         else if (numeric)
-            return numericOp(node, floating, (Number) left, (Number) right);
+            return numericOp(operator, floating, (Number) left, (Number) right);
 
-        switch (node.operator) {
+        switch (operator) {
             case EQUALITY:
                 return leftType.isPrimitive() ? left.equals(right) : left == right;
             case NOT_EQUALS:
@@ -199,17 +208,16 @@ public final class Interpreter {
 
     // ---------------------------------------------------------------------------------------------
 
-    private boolean booleanOp (DiadicExpressionNode node, boolean isAnd) {
-        boolean left = get(node.left);
+    private boolean booleanOp (Object left, Object right, boolean isAnd) {
         return isAnd
-            ? left && (boolean) get(node.right)
-            : left || (boolean) get(node.right);
+            ? (boolean) left && (boolean) right
+            : (boolean) left || (boolean) right;
     }
 
     // ---------------------------------------------------------------------------------------------
 
     private Object numericOp
-        (DiadicExpressionNode node, boolean floating, Number left, Number right) {
+        (DiadicOperator operator, boolean floating, Number left, Number right) {
         long ileft, iright;
         double fleft, fright;
 
@@ -225,7 +233,7 @@ public final class Interpreter {
 
         Object result;
         if (floating)
-            switch (node.operator) {
+            switch (operator) {
                 case MULTIPLY:
                     return fleft * fright;
                 case DIVIDE:
@@ -252,7 +260,7 @@ public final class Interpreter {
                     throw new Error("should not reach here");
             }
         else
-            switch (node.operator) {
+            switch (operator) {
                 case MULTIPLY:
                     return ileft * iright;
                 case DIVIDE:
@@ -340,39 +348,35 @@ public final class Interpreter {
     // ---------------------------------------------------------------------------------------------
 
     private Object monadicExpression (MonadicExpressionNode node) {
-        /*
-        // there is only NOT
-        assert node.operator == MonadicOperator.NOT;
-        return !(boolean) get(node.operand);
-
-         */
-
-       Type opType = reactor.get(node.operand, "type");
-
+        Type opType = reactor.get(node.operand, "type");
         Object operand = get(node.operand);
-
-        System.out.println(opType.toString());
-
+        MonadicOperator operator = node.operator;
+        return monadicExpressionCalculate(opType,operand,operator);
+    }
+    
+    private Object monadicExpressionCalculate(Type opType, Object operand, MonadicOperator operator)
+    {
         if(opType instanceof IntType || opType instanceof FloatType)
         {
 
-            return monadicOp(node,opType,operand);
+            return monadicOp(operator,opType,operand);
         }
         else if(opType instanceof ArrayType)
         {
-            return monadicOpArray(node,opType,operand);
+            return monadicOpArray(operator,opType,operand);
         }
-        return 0;
+        
+        throw new Error("should not reach here");
     }
 
-    private Object monadicOp(MonadicExpressionNode node, Type opType, Object operand)
+    private Object monadicOp(MonadicOperator operator, Type opType, Object operand)
     {
         boolean floating = opType instanceof FloatType;
         
         
         if(floating){
             double fvalue = (double) operand;
-            switch (node.operator) {
+            switch (operator) {
                 case NOT:
                     return la_gamma(fvalue);
                 case GRAB_LAST:
@@ -391,7 +395,7 @@ public final class Interpreter {
         }
         else {
             long lvalue = (long) operand;
-            switch (node.operator) {
+            switch ( operator) {
                 case NOT:
                     return factorial(lvalue);
                 case GRAB_LAST:
@@ -439,7 +443,7 @@ public final class Interpreter {
 
 
 
-        private Object monadicOpArray(MonadicExpressionNode node, Type opType, Object operand)
+        private Object monadicOpArray(MonadicOperator  operator, Type opType, Object operand)
     {
         boolean floating = ((ArrayType) opType).componentType instanceof FloatType;
 
@@ -448,7 +452,7 @@ public final class Interpreter {
             double[] fvalue = castObjectArrayToDouble((Object[]) operand);
             int length = fvalue.length;
             
-            if(node.operator.equals(MonadicOperator.NOT))
+            if( operator.equals(MonadicOperator.NOT))
             {
                 Object[] result = new Object[length];
 
@@ -460,20 +464,20 @@ public final class Interpreter {
 
                 return  result;
             }
-            else if (node.operator.equals(MonadicOperator.GRAB_LAST))
+            else if ( operator.equals(MonadicOperator.GRAB_LAST))
             {
                 return (Object) fvalue[length-1];
             }
             else {
                 for(int i = length-2; i >= 0; i--)
                 {
-                    if(node.operator.equals(MonadicOperator.SUM_SLASH))
+                    if(operator.equals(MonadicOperator.SUM_SLASH))
                         fvalue[i] = fvalue[i] + fvalue[i+1];
-                    else  if(node.operator.equals(MonadicOperator.MULT_SLASH))
+                    else  if(operator.equals(MonadicOperator.MULT_SLASH))
                         fvalue[i] = fvalue[i] * fvalue[i+1];
-                    else  if(node.operator.equals(MonadicOperator.DIV_SLASH))
+                    else  if(operator.equals(MonadicOperator.DIV_SLASH))
                         fvalue[i] = fvalue[i] / fvalue[i+1];
-                    else  if(node.operator.equals(MonadicOperator.MIN_SLASH))
+                    else  if(operator.equals(MonadicOperator.MIN_SLASH))
                         fvalue[i] = fvalue[i] - fvalue[i+1];
                     else
                         fvalue[i] = fvalue[i];
@@ -486,7 +490,7 @@ public final class Interpreter {
             long[] lvalue = castObjectArrayToLong((Object[]) operand);
             int length = lvalue.length;
 
-            if(node.operator.equals(MonadicOperator.NOT))
+            if(operator.equals(MonadicOperator.NOT))
             {
                 Object[] result = new Object[length];
 
@@ -496,20 +500,20 @@ public final class Interpreter {
                 }
                 return  result;
             }
-            else if (node.operator.equals(MonadicOperator.GRAB_LAST))
+            else if (operator.equals(MonadicOperator.GRAB_LAST))
             {
                 return (Object) lvalue[length-1];
             }
             else {
                 for(int i = length-2; i >= 0; i--)
                 {
-                    if(node.operator.equals(MonadicOperator.SUM_SLASH))
+                    if(operator.equals(MonadicOperator.SUM_SLASH))
                             lvalue[i] = lvalue[i] + lvalue[i+1];
-                    else  if(node.operator.equals(MonadicOperator.MULT_SLASH))
+                    else  if(operator.equals(MonadicOperator.MULT_SLASH))
                         lvalue[i] = lvalue[i] * lvalue[i+1];
-                    else  if(node.operator.equals(MonadicOperator.DIV_SLASH))
+                    else  if(operator.equals(MonadicOperator.DIV_SLASH))
                         lvalue[i] = lvalue[i] / lvalue[i+1];
-                    else  if(node.operator.equals(MonadicOperator.MIN_SLASH))
+                    else  if(operator.equals(MonadicOperator.MIN_SLASH))
                         lvalue[i] = lvalue[i] - lvalue[i+1];
                     else
                             lvalue[i] = lvalue[i];
@@ -716,7 +720,7 @@ public final class Interpreter {
     // ------------------------------------ new functions ------------------------------------------
 
     private Object arrayOp
-        (DiadicExpressionNode node, Object left, Object right, Type leftType, Type rightType) {
+        (DiadicOperator operator, Object left, Object right, Type leftType, Type rightType) {
         long[] aileft = new long[10000];
         long[] airight = new long[10000];
         double[] afleft = new double[10000];
@@ -820,20 +824,20 @@ public final class Interpreter {
 
         if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
             for (int i = 0; i < length; i++) {
-                Object val = getval(node, isfloat, aileft[i], airight[i], afleft[i], afright[i]);
+                Object val = getvalDiadicOperation(operator, isfloat, aileft[i], airight[i], afleft[i], afright[i]);
                 Result[i] = val;
             }
         }
         else if(leftType instanceof ArrayType)
         {
             for (int i = 0; i < length; i++) {
-                Object val = getval(node, isfloat, aileft[i],iright, afleft[i], fright);
+                Object val = getvalDiadicOperation(operator, isfloat, aileft[i],iright, afleft[i], fright);
                 Result[i] = val;
             }
         }
         else{
             for (int i = 0; i < length; i++) {
-                Object val = getval(node, isfloat, ileft, airight[i], fleft, afright[i]);
+                Object val = getvalDiadicOperation(operator, isfloat, ileft, airight[i], fleft, afright[i]);
                 Result[i] = val;
             }
         }
@@ -841,9 +845,9 @@ public final class Interpreter {
         return Result;
     }
 
-    private Object getval (DiadicExpressionNode node, Boolean floating, long ileft, long iright, double fleft, double fright) {
+    private Object getvalDiadicOperation (DiadicOperator operator, Boolean floating, long ileft, long iright, double fleft, double fright) {
         if (floating)
-            switch (node.operator) {
+            switch (operator) {
                 case MULTIPLY:
                     return fleft * fright;
                 case DIVIDE:
@@ -870,7 +874,7 @@ public final class Interpreter {
                     throw new Error("should not reach here");
             }
         else
-            switch (node.operator) {
+            switch (operator) {
                 case MULTIPLY:
                     return ileft * iright;
                 case DIVIDE:
@@ -930,5 +934,62 @@ public final class Interpreter {
             doubles[i] = (double) longs[i];
         }
         return doubles;
+    }
+
+    private Object monadicForkExpression (MonadicForkNode node) {
+        Type type = reactor.get(node.operand, "type");
+        MonadicOperator operatorL = node.operatorL;
+        MonadicOperator operatorR = node.operatorR;
+        DiadicOperator operatorM = node.operatorM;
+        Object operand = get(node.operand);
+
+        Object left = monadicExpressionCalculate(type,operand,operatorL);
+        Type leftType = findObjectType(left);
+        Object right = monadicExpressionCalculate(type,operand,operatorR);
+        Type rightType = findObjectType(right);
+        Object result = diadicExpressionCalculate(leftType,rightType,left,right,operatorM) ;
+        return result;
+    }
+
+    private Type findObjectType(Object object){
+        if(object instanceof Long)
+        {
+            return IntType.INSTANCE;
+        }
+        else if (object instanceof Double)
+        {
+            return FloatType.INSTANCE;
+        }
+        else if(object instanceof  Object[])
+        {
+            Object[] object2 = (Object[]) object;
+            if(object2[0] instanceof  Long)
+            {
+                return new  ArrayType(IntType.INSTANCE);
+            }
+            else if(object2[0] instanceof  Double)
+            {
+                return new  ArrayType(FloatType.INSTANCE);
+            }
+        }
+
+        throw new Error("should not reach here. Didnt find class of object "+ object.getClass().getCanonicalName());
+    }
+
+    private Object diadicForkExpression (DiadicForkNode node) {
+        Type typeLeft = reactor.get(node.operandL, "type");
+        Type typeRight = reactor.get(node.operandR,"type");
+        DiadicOperator operatorL = node.operatorL;
+        DiadicOperator operatorR = node.operatorR;
+        DiadicOperator operatorM = node.operatorM;
+        Object operandL = get(node.operandL);
+        Object operandR = get(node.operandR);
+
+        Object left = diadicExpressionCalculate(typeLeft,typeRight,operandL,operandR,operatorL);
+        Type leftType = findObjectType(left);
+        Object right = diadicExpressionCalculate(typeLeft,typeRight,operandL,operandR,operatorR);
+        Type rightType = findObjectType(right);
+        Object result = diadicExpressionCalculate(leftType,rightType,left,right,operatorM) ;
+        return result;
     }
 }
