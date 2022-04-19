@@ -340,17 +340,186 @@ public final class Interpreter {
     // ---------------------------------------------------------------------------------------------
 
     private Object monadicExpression (MonadicExpressionNode node) {
-        /*// there is only NOT
+        /*
+        // there is only NOT
         assert node.operator == MonadicOperator.NOT;
-        return !(boolean) get(node.operand); */
+        return !(boolean) get(node.operand);
 
-        Type opType = reactor.get(node.operand, "type");
+         */
 
-
-        // Cases where both operands should not be evaluated.
+       Type opType = reactor.get(node.operand, "type");
 
         Object operand = get(node.operand);
+
+        System.out.println(opType.toString());
+
+        if(opType instanceof IntType || opType instanceof FloatType)
+        {
+
+            return monadicOp(node,opType,operand);
+        }
+        else if(opType instanceof ArrayType)
+        {
+            return monadicOpArray(node,opType,operand);
+        }
+        return 0;
     }
+
+    private Object monadicOp(MonadicExpressionNode node, Type opType, Object operand)
+    {
+        boolean floating = opType instanceof FloatType;
+        
+        
+        if(floating){
+            double fvalue = (double) operand;
+            switch (node.operator) {
+                case NOT:
+                    return la_gamma(fvalue);
+                case GRAB_LAST:
+                    return fvalue;
+                case SUM_SLASH:
+                    return fvalue;
+                case MULT_SLASH:
+                    return fvalue;
+                case MIN_SLASH:
+                    return fvalue;
+                case DIV_SLASH:
+                    return fvalue;
+                default:
+                    return fvalue;
+            }
+        }
+        else {
+            long lvalue = (long) operand;
+            switch (node.operator) {
+                case NOT:
+                    return factorial(lvalue);
+                case GRAB_LAST:
+                    return lvalue;
+                case SUM_SLASH:
+                    return lvalue;
+                case MULT_SLASH:
+                    return lvalue;
+                case MIN_SLASH:
+                    return lvalue;
+                case DIV_SLASH:
+                    return lvalue;
+                default:
+                    return lvalue;
+            }
+        }
+    }
+        
+    private long factorial(long n)
+    {
+        if (n == 0) {
+            return 1;
+        }
+        else {
+            return (n * factorial(n - 1));
+        }
+    }
+
+    // factorial of double
+    // source : https://rosettacode.org/wiki/Gamma_function#Java
+    private double la_gamma(double x) {
+        double[] p = {0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+            771.32342877765313, -176.61502916214059, 12.507343278686905,
+            -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7};
+        int g = 7;
+        if (x < 0.5) return Math.PI / (Math.sin(Math.PI * x) * la_gamma(1 - x));
+
+        double a = p[0];
+        double t = x + g + 0.5;
+        for (int i = 1; i < p.length; i++) {
+            a += p[i] / (x + i);
+        }
+        return Math.sqrt(2*Math.PI)*Math.pow(t, x+0.5)*Math.exp(-t)*a;
+    }
+
+
+
+        private Object monadicOpArray(MonadicExpressionNode node, Type opType, Object operand)
+    {
+        boolean floating = ((ArrayType) opType).componentType instanceof FloatType;
+
+
+        if(floating){
+            double[] fvalue = castObjectArrayToDouble((Object[]) operand);
+            int length = fvalue.length;
+            
+            if(node.operator.equals(MonadicOperator.NOT))
+            {
+                Object[] result = new Object[length];
+
+
+                for(int i = 0; i < length; i++)
+                {
+                    result[i] = la_gamma(fvalue[i]);
+                }
+
+                return  result;
+            }
+            else if (node.operator.equals(MonadicOperator.GRAB_LAST))
+            {
+                return (Object) fvalue[length-1];
+            }
+            else {
+                for(int i = length-2; i >= 0; i--)
+                {
+                    if(node.operator.equals(MonadicOperator.SUM_SLASH))
+                        fvalue[i] = fvalue[i] + fvalue[i+1];
+                    else  if(node.operator.equals(MonadicOperator.MULT_SLASH))
+                        fvalue[i] = fvalue[i] * fvalue[i+1];
+                    else  if(node.operator.equals(MonadicOperator.DIV_SLASH))
+                        fvalue[i] = fvalue[i] / fvalue[i+1];
+                    else  if(node.operator.equals(MonadicOperator.MIN_SLASH))
+                        fvalue[i] = fvalue[i] - fvalue[i+1];
+                    else
+                        fvalue[i] = fvalue[i];
+
+                }
+                return (Object) fvalue[0];
+            }
+        }
+        else {
+            long[] lvalue = castObjectArrayToLong((Object[]) operand);
+            int length = lvalue.length;
+
+            if(node.operator.equals(MonadicOperator.NOT))
+            {
+                Object[] result = new Object[length];
+
+                for(int i = 0; i < length; i++)
+                {
+                    result[i] = factorial(lvalue[i]);
+                }
+                return  result;
+            }
+            else if (node.operator.equals(MonadicOperator.GRAB_LAST))
+            {
+                return (Object) lvalue[length-1];
+            }
+            else {
+                for(int i = length-2; i >= 0; i--)
+                {
+                    if(node.operator.equals(MonadicOperator.SUM_SLASH))
+                            lvalue[i] = lvalue[i] + lvalue[i+1];
+                    else  if(node.operator.equals(MonadicOperator.MULT_SLASH))
+                        lvalue[i] = lvalue[i] * lvalue[i+1];
+                    else  if(node.operator.equals(MonadicOperator.DIV_SLASH))
+                        lvalue[i] = lvalue[i] / lvalue[i+1];
+                    else  if(node.operator.equals(MonadicOperator.MIN_SLASH))
+                        lvalue[i] = lvalue[i] - lvalue[i+1];
+                    else
+                            lvalue[i] = lvalue[i];
+                    
+                }
+                return (Object) lvalue[0];
+            }
+        }
+    }
+
 
     // ---------------------------------------------------------------------------------------------
 

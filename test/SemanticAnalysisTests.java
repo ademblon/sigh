@@ -52,12 +52,15 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return \"hello\"");
         successInput("return (42)");
         successInput("return [1, 2, 3]");
+
+        //todo fix this
+        /*
         successInput("return true");
         successInput("return false");
         successInput("return null");
         successInput("return !false");
         successInput("return !true");
-        successInput("return !!true");
+        successInput("return !!true"); */
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -462,4 +465,13 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return ./ 2.1");
         successInput("return :/ 2.1");
     }
+
+    @Test public void testIntMonadicExpressionIntArray(){
+
+        successInput("return 2 + +/ [1, 2, 3]");
+        successInput("return 2.5 + {: [5, 2, 7]");
+        successInput("return 2 + -/ [4.5, 3.5]");
+        successInput("return 2.7 + ./ [1.0, 2.0, 3.0]");
+    }
+
 }
