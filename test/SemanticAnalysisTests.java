@@ -426,4 +426,40 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return [1.0] >= [2.0]");
         successInput("return [1.0, 2.0, 3.0] >= [1.0, 2.0, 3.0]");
     }
+
+    @Test public void testMonadicExpressionIntArray(){
+
+        successInput("return +/ [1, 2, 3]");
+        successInput("return {: [5, 2, 7]");
+        successInput("return -/ [4, 3]");
+        successInput("return ./ [1, 2, 3]");
+        successInput("return :/ [10, 5, 6]");
+    }
+
+    @Test public void testMonadicExpressionDoubleArray(){
+
+        successInput("return +/ [1.1, 2.1, 3.1]");
+        successInput("return {: [5.1, 2.1, 7.1]");
+        successInput("return -/ [4.1, 3.1]");
+        successInput("return ./ [1.1, 2.1, 3.1]");
+        successInput("return :/ [10.1, 5.1, 6.1]");
+    }
+
+    @Test public void testMonadicExpressionInt(){
+
+        successInput("return +/ 2");
+        successInput("return {: 2");
+        successInput("return -/ 2");
+        successInput("return ./ 2");
+        successInput("return :/ 2");
+    }
+
+    @Test public void testMonadicExpressionDouble(){
+
+        successInput("return +/ 2.1");
+        successInput("return {: 2.1");
+        successInput("return -/ 2.1");
+        successInput("return ./ 2.1");
+        successInput("return :/ 2.1");
+    }
 }

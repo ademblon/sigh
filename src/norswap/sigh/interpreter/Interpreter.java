@@ -340,9 +340,16 @@ public final class Interpreter {
     // ---------------------------------------------------------------------------------------------
 
     private Object monadicExpression (MonadicExpressionNode node) {
-        // there is only NOT
+        /*// there is only NOT
         assert node.operator == MonadicOperator.NOT;
-        return !(boolean) get(node.operand);
+        return !(boolean) get(node.operand); */
+
+        Type opType = reactor.get(node.operand, "type");
+
+
+        // Cases where both operands should not be evaluated.
+
+        Object operand = get(node.operand);
     }
 
     // ---------------------------------------------------------------------------------------------

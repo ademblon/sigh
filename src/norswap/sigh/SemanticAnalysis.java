@@ -442,6 +442,7 @@ public final class SemanticAnalysis
 
     private void unaryExpression (MonadicExpressionNode node)
     {
+        /*
         assert node.operator == MonadicOperator.NOT; // only one for now
         R.set(node, "type", BoolType.INSTANCE);
 
@@ -451,7 +452,41 @@ public final class SemanticAnalysis
             Type opType = r.get(0);
             if (!(opType instanceof BoolType))
                 r.error("Trying to negate type: " + opType, node);
-        });
+        }); */
+
+        R.rule(node, "type")
+            .using(node.operand, "type")
+            .by(r -> {
+                Type opType = r.get(0);
+                if(opType instanceof ArrayType)
+                {
+                    if(((ArrayType) opType).componentType instanceof IntType)
+                    {
+                        r.set(0, new ArrayType(IntType.INSTANCE));
+                    }
+                    else if(((ArrayType) opType).componentType instanceof FloatType)
+                    {
+                        r.set(0, new ArrayType(FloatType.INSTANCE));
+                    }
+                    else
+                    {
+                        //todo change this
+                        r.error(format("Error Unary, not correct array type : %s %s",node.operator.name().toLowerCase(),opType), node);
+                    }
+
+                }
+                else if( opType instanceof IntType)
+                {
+                    r.set(0, IntType.INSTANCE);
+                }
+                else if(opType instanceof FloatType)
+                {
+                    r.set(0, FloatType.INSTANCE);
+                }
+
+                else if (!(opType instanceof BoolType))
+                    r.error("Trying to negate type: " + opType, node);
+            });
     }
 
     // endregion
