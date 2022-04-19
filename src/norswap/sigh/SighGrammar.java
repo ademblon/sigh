@@ -157,7 +157,10 @@ public class SighGrammar extends Grammar
         LANGLE_EQUAL.as_val(DiadicOperator.LOWER_EQUAL),
         RANGLE_EQUAL.as_val(DiadicOperator.GREATER_EQUAL),
         LANGLE      .as_val(DiadicOperator.LOWER),
-        RANGLE      .as_val(DiadicOperator.GREATER));
+        RANGLE      .as_val(DiadicOperator.GREATER),
+        AMP_AMP     .as_val(DiadicOperator.AND),
+        BAR_BAR     .as_val(DiadicOperator.OR)
+        );
 
     public rule monadic_verb = choice(
         GRAB_LAST   .as_val(MonadicOperator.GRAB_LAST),
@@ -186,8 +189,13 @@ public class SighGrammar extends Grammar
         .infix(diadic_fork_op,
             $ -> new DiadicForkNode($.span(), $.$[0], $.$[1], $.$[2], $.$[3], $.$[4]));
 
+    public rule assignment_expression = right_expression()
+        .operand(diadic_fork_expression)
+        .infix(EQUALS,
+            $ -> new AssignmentNode($.span(), $.$[0], $.$[1]));
+
     public rule expression =
-        seq(diadic_fork_expression);
+        seq(assignment_expression);
 
     public rule expression_stmt =
         expression
