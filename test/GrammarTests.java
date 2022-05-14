@@ -265,6 +265,7 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("-/ [4, 3]", new MonadicExpressionNode(null, MIN_SLASH, new ArrayLiteralNode(null, asList(intlit(4), intlit(3)))));
         successExpect("./ 9", new MonadicExpressionNode(null, MULT_SLASH, intlit(9)));
         successExpect(":/ [10, 5, 6]", new MonadicExpressionNode(null, DIV_SLASH, new ArrayLiteralNode(null, asList(intlit(10), intlit(5), intlit(6)))));
+        successExpect("# [7, 9, 3, 5, 8]", new MonadicExpressionNode(null, HASHTAG, new ArrayLiteralNode(null, asList(intlit(7), intlit(9), intlit(3), intlit(5), intlit(8)))));
         successExpect("5 + :/ [10, 5, 6]", new DiadicExpressionNode(null, intlit(5), ADD, new MonadicExpressionNode(null, DIV_SLASH, new ArrayLiteralNode(null, asList(intlit(10), intlit(5), intlit(6))))));
 
     }
@@ -276,6 +277,7 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("(:/ / +/) [1, 2]", new MonadicForkNode(null, DIV_SLASH, DIVIDE, SUM_SLASH, new ArrayLiteralNode(null, asList(intlit(1), intlit(2)))));
         successExpect("(-/ * ./) [1, 2]", new MonadicForkNode(null, MIN_SLASH, MULTIPLY, MULT_SLASH, new ArrayLiteralNode(null, asList(intlit(1), intlit(2)))));
         successExpect("(+/ % {:) [1, 2]", new MonadicForkNode(null, SUM_SLASH, REMAINDER, GRAB_LAST, new ArrayLiteralNode(null, asList(intlit(1), intlit(2)))));
+        successExpect("(-/ + +/) (+/ % {:) [1, 2]", new MonadicForkNode(null, MIN_SLASH, ADD, SUM_SLASH, new MonadicForkNode(null, SUM_SLASH, REMAINDER, GRAB_LAST, new ArrayLiteralNode(null, asList(intlit(1), intlit(2))))));
     }
 
     @Test public void testDiadicFork(){

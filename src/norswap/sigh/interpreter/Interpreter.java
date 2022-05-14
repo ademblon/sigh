@@ -389,6 +389,9 @@ public final class Interpreter {
                     return fvalue;
                 case DIV_SLASH:
                     return fvalue;
+                case HASHTAG:
+                    fvalue = 1;
+                    return fvalue;
                 default:
                     return fvalue;
             }
@@ -407,6 +410,9 @@ public final class Interpreter {
                 case MIN_SLASH:
                     return lvalue;
                 case DIV_SLASH:
+                    return lvalue;
+                case HASHTAG:
+                    lvalue = 1;
                     return lvalue;
                 default:
                     return lvalue;
@@ -468,6 +474,10 @@ public final class Interpreter {
             {
                 return (Object) fvalue[length-1];
             }
+            else if (operator.equals(MonadicOperator.HASHTAG))
+            {
+                return length;
+            }
             else {
                 for(int i = length-2; i >= 0; i--)
                 {
@@ -503,6 +513,10 @@ public final class Interpreter {
             else if (operator.equals(MonadicOperator.GRAB_LAST))
             {
                 return (Object) lvalue[length-1];
+            }
+            else if (operator.equals(MonadicOperator.HASHTAG))
+            {
+                return length;
             }
             else {
                 for(int i = length-2; i >= 0; i--)

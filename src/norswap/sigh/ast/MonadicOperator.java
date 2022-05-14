@@ -9,6 +9,7 @@ public enum MonadicOperator
     SUM_SLASH("+/"),
     MULT_SLASH("./"),
     DIV_SLASH(":/"),
+    HASHTAG("#"),
     MIN_SLASH("-/");
 
     public final String string;

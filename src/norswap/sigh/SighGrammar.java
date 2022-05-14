@@ -63,6 +63,7 @@ public class SighGrammar extends Grammar
     public rule MULT_SLASH      = word("./");
     public rule DIV_SLASH       = word(":/");
     public rule MIN_SLASH       = word("-/");
+    public rule HASHTAG          = word("#");
 
     public rule number =
         seq(opt('-'), choice('0', digit.at_least(1)));
@@ -168,6 +169,7 @@ public class SighGrammar extends Grammar
         MULT_SLASH  .as_val(MonadicOperator.MULT_SLASH),
         DIV_SLASH   .as_val(MonadicOperator.DIV_SLASH),
         MIN_SLASH   .as_val(MonadicOperator.MIN_SLASH),
+        HASHTAG      .as_val(MonadicOperator.HASHTAG),
         BANG        .as_val(MonadicOperator.NOT)
     );
 

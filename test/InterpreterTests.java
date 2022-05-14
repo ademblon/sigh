@@ -516,6 +516,7 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ [1, 2, 3]",6L);
         checkExpr(":/ [4, 6, 3]",2L);
         checkExpr("-/ [1, 3, 7]",5L);
+        checkExpr("# [7, 12, 5, 8, 62, 32]", 6);
         checkExpr("! [1, 3, 5]",new Object[]{1L, 6L, 120L});
     }
 
@@ -528,6 +529,7 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ [1.0, 2.0, 3.0]",6d);
         checkExpr(":/ [4.0, 6.0, 3.0]",2d);
         checkExpr("-/ [1.0, 3.0, 7.0]",5d);
+        checkExpr("# [3.0, 5.0, 6.0, 7.0]", 4);
         checkExpr("! [1.0, 3.0, 5.0]",new Object[]{1.0000000000000002d, 6.000000000000007d, 120.00000000000021d});
     }
 
@@ -540,6 +542,7 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ 2",2L);
         checkExpr(":/ 2",2L);
         checkExpr("-/ 2",2L);
+        checkExpr("# 2", 1L);
         checkExpr("! 2",2L);
     }
 
@@ -552,6 +555,7 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ 1.1",1.1d);
         checkExpr(":/ 1.1",1.1d);
         checkExpr("-/ 1.1",1.1d);
+        checkExpr("# 1.1", 1.0d);
         checkExpr(" ! 1.5",1.3293403881791384d);
     }
 
