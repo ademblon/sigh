@@ -10,6 +10,8 @@ public enum MonadicOperator
     MULT_SLASH("./"),
     DIV_SLASH(":/"),
     HASHTAG("#"),
+    SELF_ADD("+:"),
+    SELF_MULT("*:"),
     MIN_SLASH("-/");
 
     public final String string;

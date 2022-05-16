@@ -7,6 +7,8 @@ public enum DiadicOperator
     REMAINDER("%"),
     ADD("+"),
     SUBTRACT("-"),
+    EXPONENT("^"),
+    CONCAT("<>"),
     EQUALITY("=="),
     NOT_EQUALS("!="),
     GREATER(">"),

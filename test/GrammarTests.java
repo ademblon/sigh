@@ -54,24 +54,32 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("2 * 3", new DiadicExpressionNode(null, intlit(2), MULTIPLY, intlit(3)));
         successExpect("2 / 3", new DiadicExpressionNode(null, intlit(2), DIVIDE, intlit(3)));
         successExpect("2 % 3", new DiadicExpressionNode(null, intlit(2), REMAINDER, intlit(3)));
+        successExpect("2 ^ 3", new DiadicExpressionNode(null, intlit(2), EXPONENT, intlit(3)));
+        successExpect("2 <> 3", new DiadicExpressionNode(null, intlit(2), CONCAT, intlit(3)));
 
         successExpect("1.0 + 2.0", new DiadicExpressionNode(null, floatlit(1), ADD, floatlit(2)));
         successExpect("2.0 - 1.0", new DiadicExpressionNode(null, floatlit(2), SUBTRACT, floatlit(1)));
         successExpect("2.0 * 3.0", new DiadicExpressionNode(null, floatlit(2), MULTIPLY, floatlit(3)));
         successExpect("2.0 / 3.0", new DiadicExpressionNode(null, floatlit(2), DIVIDE, floatlit(3)));
         successExpect("2.0 % 3.0", new DiadicExpressionNode(null, floatlit(2), REMAINDER, floatlit(3)));
+        successExpect("2.0 ^ 3.0", new DiadicExpressionNode(null, floatlit(2), EXPONENT, floatlit(3)));
+        successExpect("2.0 <> 3.0", new DiadicExpressionNode(null, floatlit(2), CONCAT, floatlit(3)));
 
         successExpect("1.0 + 2", new DiadicExpressionNode(null, floatlit(1), ADD, intlit(2)));
         successExpect("2.0 - 1", new DiadicExpressionNode(null, floatlit(2), SUBTRACT, intlit(1)));
         successExpect("2.0 * 3", new DiadicExpressionNode(null, floatlit(2), MULTIPLY, intlit(3)));
         successExpect("2.0 / 3", new DiadicExpressionNode(null, floatlit(2), DIVIDE, intlit(3)));
         successExpect("2.0 % 3", new DiadicExpressionNode(null, floatlit(2), REMAINDER, intlit(3)));
+        successExpect("2.0 ^ 3", new DiadicExpressionNode(null, floatlit(2), EXPONENT, intlit(3)));
+        successExpect("2.0 <> 3", new DiadicExpressionNode(null, floatlit(2), CONCAT, intlit(3)));
 
         successExpect("1 + 2.0", new DiadicExpressionNode(null, intlit(1), ADD, floatlit(2)));
         successExpect("2 - 1.0", new DiadicExpressionNode(null, intlit(2), SUBTRACT, floatlit(1)));
         successExpect("2 * 3.0", new DiadicExpressionNode(null, intlit(2), MULTIPLY, floatlit(3)));
         successExpect("2 / 3.0", new DiadicExpressionNode(null, intlit(2), DIVIDE, floatlit(3)));
         successExpect("2 % 3.0", new DiadicExpressionNode(null, intlit(2), REMAINDER, floatlit(3)));
+        successExpect("2 ^ 3.0", new DiadicExpressionNode(null, intlit(2), EXPONENT, floatlit(3)));
+        successExpect("2 <> 3.0", new DiadicExpressionNode(null, intlit(2), CONCAT, floatlit(3)));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -181,6 +189,10 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("1 / [1, 2, 3]", new DiadicExpressionNode(null, intlit(1), DIVIDE, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
         successExpect("1 % [2]", new DiadicExpressionNode(null, intlit(1), REMAINDER, new ArrayLiteralNode(null, asList(intlit(2)))));
         successExpect("1 % [1, 2, 3]", new DiadicExpressionNode(null, intlit(1), REMAINDER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 ^ [2]", new DiadicExpressionNode(null, intlit(1), EXPONENT, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 ^ [1, 2, 3]", new DiadicExpressionNode(null, intlit(1), EXPONENT, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
+        successExpect("1 <> [2]", new DiadicExpressionNode(null, intlit(1), CONCAT, new ArrayLiteralNode(null, asList(intlit(2)))));
+        successExpect("1 <> [1, 2, 3]", new DiadicExpressionNode(null, intlit(1), CONCAT, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
         successExpect("1 < [2]", new DiadicExpressionNode(null, intlit(1), LOWER, new ArrayLiteralNode(null, asList(intlit(2)))));
         successExpect("1 < [1, 2, 3]", new DiadicExpressionNode(null, intlit(1), LOWER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
         successExpect("1 > [2]", new DiadicExpressionNode(null, intlit(1), GREATER, new ArrayLiteralNode(null, asList(intlit(2)))));
@@ -203,6 +215,10 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("1.0 / [1.0, 2.0, 3.0]", new DiadicExpressionNode(null, floatlit(1), DIVIDE, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
         successExpect("1.0 % [2.0]", new DiadicExpressionNode(null, floatlit(1), REMAINDER, new ArrayLiteralNode(null, asList(floatlit(2)))));
         successExpect("1.0 % [1.0, 2.0, 3.0]", new DiadicExpressionNode(null, floatlit(1), REMAINDER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 ^ [2.0]", new DiadicExpressionNode(null, floatlit(1), EXPONENT, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 ^ [1.0, 2.0, 3.0]", new DiadicExpressionNode(null, floatlit(1), EXPONENT, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
+        successExpect("1.0 <> [2.0]", new DiadicExpressionNode(null, floatlit(1), CONCAT, new ArrayLiteralNode(null, asList(floatlit(2)))));
+        successExpect("1.0 <> [1.0, 2.0, 3.0]", new DiadicExpressionNode(null, floatlit(1), CONCAT, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
         successExpect("1.0 < [2.0]", new DiadicExpressionNode(null, floatlit(1), LOWER, new ArrayLiteralNode(null, asList(floatlit(2)))));
         successExpect("1.0 < [1.0, 2.0, 3.0]", new DiadicExpressionNode(null, floatlit(1), LOWER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
         successExpect("1.0 > [2.0]", new DiadicExpressionNode(null, floatlit(1), GREATER, new ArrayLiteralNode(null, asList(floatlit(2)))));
@@ -225,6 +241,10 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("[1.0, 2.0, 3.0] / [4.0, 5.0, 6.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),DIVIDE,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
         successExpect("[1.0] % [3.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),REMAINDER,new ArrayLiteralNode(null, asList(floatlit(3)))));
         successExpect("[1.0, 2.0, 3.0] % [4.0, 5.0, 6.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),REMAINDER,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+        successExpect("[1.0] ^ [3.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),EXPONENT,new ArrayLiteralNode(null, asList(floatlit(3)))));
+        successExpect("[1.0, 2.0, 3.0] ^ [4.0, 5.0, 6.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),EXPONENT,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
+        successExpect("[1.0] <> [3.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1))),CONCAT,new ArrayLiteralNode(null, asList(floatlit(3)))));
+        successExpect("[1.0, 2.0, 3.0] <> [4.0, 5.0, 6.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))),CONCAT,new ArrayLiteralNode(null, asList(floatlit(4),floatlit(5),floatlit(6)))));
         successExpect("[1.0] < [2.0]", new DiadicExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1))), LOWER, new ArrayLiteralNode(null, asList(floatlit(2)))));
         successExpect("[1.0, 2.0, 3.0] < [1.0, 2.0, 3.0]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3))), LOWER, new ArrayLiteralNode(null, asList(floatlit(1),floatlit(2),floatlit(3)))));
         successExpect("[1.0] > [2.0]", new DiadicExpressionNode(null, new ArrayLiteralNode(null, asList(floatlit(1))), GREATER, new ArrayLiteralNode(null, asList(floatlit(2)))));
@@ -248,6 +268,10 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("[1, 2, 3] / [4, 5, 6]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),DIVIDE,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
         successExpect("[1] % [3]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),REMAINDER,new ArrayLiteralNode(null, asList(intlit(3)))));
         successExpect("[1, 2, 3] % [4, 5, 6]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),REMAINDER,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+        successExpect("[1] ^ [3]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),EXPONENT,new ArrayLiteralNode(null, asList(intlit(3)))));
+        successExpect("[1, 2, 3] ^ [4, 5, 6]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),EXPONENT,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
+        successExpect("[1] <> [3]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))),CONCAT,new ArrayLiteralNode(null, asList(intlit(3)))));
+        successExpect("[1, 2, 3] <> [4, 5, 6]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))),CONCAT,new ArrayLiteralNode(null, asList(intlit(4),intlit(5),intlit(6)))));
         successExpect("[1] < [2]", new DiadicExpressionNode(null, new ArrayLiteralNode(null, asList(intlit(1))), LOWER, new ArrayLiteralNode(null, asList(intlit(2)))));
         successExpect("[1, 2, 3] < [1, 2, 3]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3))), LOWER, new ArrayLiteralNode(null, asList(intlit(1),intlit(2),intlit(3)))));
         successExpect("[1] > [2]", new DiadicExpressionNode(null,new ArrayLiteralNode(null, asList(intlit(1))), GREATER, new ArrayLiteralNode(null, asList(intlit(2)))));
@@ -266,6 +290,8 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("./ 9", new MonadicExpressionNode(null, MULT_SLASH, intlit(9)));
         successExpect(":/ [10, 5, 6]", new MonadicExpressionNode(null, DIV_SLASH, new ArrayLiteralNode(null, asList(intlit(10), intlit(5), intlit(6)))));
         successExpect("# [7, 9, 3, 5, 8]", new MonadicExpressionNode(null, HASHTAG, new ArrayLiteralNode(null, asList(intlit(7), intlit(9), intlit(3), intlit(5), intlit(8)))));
+        successExpect("+: [3, 4, 7, 8]", new MonadicExpressionNode(null, SELF_ADD, new ArrayLiteralNode(null, asList(intlit(3), intlit(4), intlit(7), intlit(8)))));
+        successExpect("*: [2, 9, 5]", new MonadicExpressionNode(null, SELF_MULT, new ArrayLiteralNode(null, asList(intlit(2), intlit(9), intlit(5)))));
         successExpect("5 + :/ [10, 5, 6]", new DiadicExpressionNode(null, intlit(5), ADD, new MonadicExpressionNode(null, DIV_SLASH, new ArrayLiteralNode(null, asList(intlit(10), intlit(5), intlit(6))))));
 
     }
