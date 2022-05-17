@@ -161,143 +161,6 @@ public final class Interpreter {
 
     // ---------------------------------------------------------------------------------------------
 
-    private Object diadicExpression (DiadicExpressionNode node) {
-        Type leftType = reactor.get(node.left, "type");
-        Type rightType = reactor.get(node.right, "type");
-
-        Object left = get(node.left);
-        Object right = get(node.right);
-
-        DiadicOperator operator = node.operator;
-
-        return diadicExpressionCalculate(leftType,rightType,left,right,operator);
-    }
-    
-    private Object diadicExpressionCalculate(Type leftType, Type rightType, Object left, Object right, DiadicOperator operator)
-    {
-        // Cases where both operands should not be evaluated.
-        switch (operator) {
-            case OR:
-                return booleanOp(left,right, false);
-            case AND:
-                return booleanOp(left,right, true);
-        }
-        
-        if (operator == DiadicOperator.ADD
-            && (leftType instanceof StringType || rightType instanceof StringType))
-            return convertToString(left) + convertToString(right);
-
-        boolean floating = leftType instanceof FloatType || rightType instanceof FloatType;
-        boolean numeric = floating || leftType instanceof IntType || rightType instanceof IntType;
-        boolean array = leftType instanceof ArrayType || rightType instanceof ArrayType;
-
-        if (array)
-            return arrayOp(operator, left, right, leftType, rightType);
-        else if (numeric)
-            return numericOp(operator, floating, (Number) left, (Number) right);
-
-        switch (operator) {
-            case EQUALITY:
-                return leftType.isPrimitive() ? left.equals(right) : left == right;
-            case NOT_EQUALS:
-                return leftType.isPrimitive() ? !left.equals(right) : left != right;
-        }
-
-        throw new Error("should not reach here");
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    private boolean booleanOp (Object left, Object right, boolean isAnd) {
-        return isAnd
-            ? (boolean) left && (boolean) right
-            : (boolean) left || (boolean) right;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    private Object numericOp
-        (DiadicOperator operator, boolean floating, Number left, Number right) {
-        long ileft, iright;
-        double fleft, fright;
-
-        if (floating) {
-            fleft = left.doubleValue();
-            fright = right.doubleValue();
-            ileft = iright = 0;
-        } else {
-            ileft = left.longValue();
-            iright = right.longValue();
-            fleft = fright = 0;
-        }
-
-        Object result;
-        if (floating)
-            switch (operator) {
-                case MULTIPLY:
-                    return fleft * fright;
-                case DIVIDE:
-                    return fleft / fright;
-                case REMAINDER:
-                    return fleft % fright;
-                case ADD:
-                    return fleft + fright;
-                case SUBTRACT:
-                    return fleft - fright;
-                case EXPONENT:
-                    return Math.pow(fleft, fright);
-                case GREATER:
-                    return fleft > fright ? 1.0 : 0.0;
-                case LOWER:
-                    return fleft < fright ? 1.0 : 0.0;
-                case GREATER_EQUAL:
-                    return fleft >= fright ? 1.0 : 0.0 ;
-                case LOWER_EQUAL:
-                    return fleft <= fright ? 1.0 : 0.0;
-                case EQUALITY:
-                    return fleft == fright ? 1.0 : 0.0;
-                case NOT_EQUALS:
-                    return fleft != fright ? 1.0 : 0.0;
-                case CONCAT:
-                    return new Object[]{fleft, fright};
-                default:
-                    throw new Error("should not reach here");
-            }
-        else
-            switch (operator) {
-                case MULTIPLY:
-                    return ileft * iright;
-                case DIVIDE:
-                    return ileft / iright;
-                case REMAINDER:
-                    return ileft % iright;
-                case ADD:
-                    return ileft + iright;
-                case SUBTRACT:
-                    return ileft - iright;
-                case EXPONENT:
-                    return (long) Math.pow(ileft, iright);
-                case GREATER:
-                    return ileft > iright ? (long) 1 : (long) 0;
-                case LOWER:
-                    return ileft < iright ? (long) 1 : (long) 0;
-                case GREATER_EQUAL:
-                    return ileft >= iright ?  (long) 1 : (long) 0;
-                case LOWER_EQUAL:
-                    return ileft <= iright ? (long) 1 :(long)  0;
-                case EQUALITY:
-                    return ileft == iright ? (long) 1 : (long) 0;
-                case NOT_EQUALS:
-                    return ileft != iright ? (long) 1 : (long) 0;
-                case CONCAT:
-                    return new Object[]{ileft, iright};
-                default:
-                    throw new Error("should not reach here");
-            }
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     public Object assignment (AssignmentNode node) {
         if (node.left instanceof ReferenceNode) {
             Scope scope = reactor.get(node.left, "scope");
@@ -354,245 +217,6 @@ public final class Interpreter {
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    private Object monadicExpression (MonadicExpressionNode node) {
-        Type opType = reactor.get(node.operand, "type");
-        Object operand = get(node.operand);
-        MonadicOperator operator = node.operator;
-        return monadicExpressionCalculate(opType,operand,operator);
-    }
-    
-    private Object monadicExpressionCalculate(Type opType, Object operand, MonadicOperator operator)
-    {
-        if(opType instanceof IntType || opType instanceof FloatType)
-        {
-
-            return monadicOp(operator,opType,operand);
-        }
-        else if(opType instanceof ArrayType)
-        {
-            return monadicOpArray(operator,opType,operand);
-        }
-        
-        throw new Error("should not reach here");
-    }
-
-    private Object monadicOp(MonadicOperator operator, Type opType, Object operand)
-    {
-        boolean floating = opType instanceof FloatType;
-        
-        
-        if(floating){
-            double fvalue = (double) operand;
-            switch (operator) {
-                case NOT:
-                    return la_gamma(fvalue);
-                case GRAB_LAST:
-                    return fvalue;
-                case SUM_SLASH:
-                    return fvalue;
-                case MULT_SLASH:
-                    return fvalue;
-                case MIN_SLASH:
-                    return fvalue;
-                case DIV_SLASH:
-                    return fvalue;
-                case SELF_ADD:
-                    return fvalue + fvalue;
-                case SELF_MULT:
-                    return fvalue * fvalue;
-                case HASHTAG:
-                    fvalue = 1;
-                    return fvalue;
-                default:
-                    return fvalue;
-            }
-        }
-        else {
-            long lvalue = (long) operand;
-            switch ( operator) {
-                case NOT:
-                    return factorial(lvalue);
-                case GRAB_LAST:
-                    return lvalue;
-                case SUM_SLASH:
-                    return lvalue;
-                case MULT_SLASH:
-                    return lvalue;
-                case MIN_SLASH:
-                    return lvalue;
-                case DIV_SLASH:
-                    return lvalue;
-                case SELF_ADD:
-                    return lvalue + lvalue;
-                case SELF_MULT:
-                    return lvalue * lvalue;
-                case HASHTAG:
-                    lvalue = 1;
-                    return lvalue;
-                default:
-                    return lvalue;
-            }
-        }
-    }
-        
-    private long factorial(long n)
-    {
-        if (n == 0) {
-            return 1;
-        }
-        else {
-            return (n * factorial(n - 1));
-        }
-    }
-
-    // factorial of double
-    // source : https://rosettacode.org/wiki/Gamma_function#Java
-    private double la_gamma(double x) {
-        double[] p = {0.99999999999980993, 676.5203681218851, -1259.1392167224028,
-            771.32342877765313, -176.61502916214059, 12.507343278686905,
-            -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7};
-        int g = 7;
-        if (x < 0.5) return Math.PI / (Math.sin(Math.PI * x) * la_gamma(1 - x));
-
-        double a = p[0];
-        double t = x + g + 0.5;
-        for (int i = 1; i < p.length; i++) {
-            a += p[i] / (x + i);
-        }
-        return Math.sqrt(2*Math.PI)*Math.pow(t, x+0.5)*Math.exp(-t)*a;
-    }
-
-
-
-        private Object monadicOpArray(MonadicOperator  operator, Type opType, Object operand)
-    {
-        boolean floating = ((ArrayType) opType).componentType instanceof FloatType;
-
-
-        if(floating){
-            double[] fvalue = castObjectArrayToDouble((Object[]) operand);
-            int length = fvalue.length;
-            
-            if( operator.equals(MonadicOperator.NOT))
-            {
-                Object[] result = new Object[length];
-
-
-                for(int i = 0; i < length; i++)
-                {
-                    result[i] = la_gamma(fvalue[i]);
-                }
-
-                return  result;
-            }
-            else if (operator.equals(MonadicOperator.SELF_ADD))
-            {
-                Object[] result = new Object[length];
-
-                for(int i = 0; i < length; i++)
-                {
-                    result[i] = fvalue[i] + fvalue[i];
-                }
-                return  result;
-            }
-            else if (operator.equals(MonadicOperator.SELF_MULT))
-            {
-                Object[] result = new Object[length];
-
-                for(int i = 0; i < length; i++)
-                {
-                    result[i] = fvalue[i] * fvalue[i];
-                }
-                return  result;
-            }
-            else if ( operator.equals(MonadicOperator.GRAB_LAST))
-            {
-                return (Object) fvalue[length-1];
-            }
-            else if (operator.equals(MonadicOperator.HASHTAG))
-            {
-                return length;
-            }
-            else {
-                for(int i = length-2; i >= 0; i--)
-                {
-                    if(operator.equals(MonadicOperator.SUM_SLASH))
-                        fvalue[i] = fvalue[i] + fvalue[i+1];
-                    else  if(operator.equals(MonadicOperator.MULT_SLASH))
-                        fvalue[i] = fvalue[i] * fvalue[i+1];
-                    else  if(operator.equals(MonadicOperator.DIV_SLASH))
-                        fvalue[i] = fvalue[i] / fvalue[i+1];
-                    else  if(operator.equals(MonadicOperator.MIN_SLASH))
-                        fvalue[i] = fvalue[i] - fvalue[i+1];
-                    else
-                        fvalue[i] = fvalue[i];
-
-                }
-                return (Object) fvalue[0];
-            }
-        }
-        else {
-            long[] lvalue = castObjectArrayToLong((Object[]) operand);
-            int length = lvalue.length;
-
-            if(operator.equals(MonadicOperator.NOT))
-            {
-                Object[] result = new Object[length];
-
-                for(int i = 0; i < length; i++)
-                {
-                    result[i] = factorial(lvalue[i]);
-                }
-                return  result;
-            }
-            else if (operator.equals(MonadicOperator.SELF_ADD))
-            {
-                Object[] result = new Object[length];
-
-                for(int i = 0; i < length; i++)
-                {
-                    result[i] = lvalue[i] + lvalue[i];
-                }
-                return  result;
-            }
-            else if (operator.equals(MonadicOperator.SELF_MULT))
-            {
-                Object[] result = new Object[length];
-
-                for(int i = 0; i < length; i++)
-                {
-                    result[i] = lvalue[i] * lvalue[i];
-                }
-                return  result;
-            }
-            else if (operator.equals(MonadicOperator.GRAB_LAST))
-            {
-                return (Object) lvalue[length-1];
-            }
-            else if (operator.equals(MonadicOperator.HASHTAG))
-            {
-                return length;
-            }
-            else {
-                for(int i = length-2; i >= 0; i--)
-                {
-                    if(operator.equals(MonadicOperator.SUM_SLASH))
-                            lvalue[i] = lvalue[i] + lvalue[i+1];
-                    else  if(operator.equals(MonadicOperator.MULT_SLASH))
-                        lvalue[i] = lvalue[i] * lvalue[i+1];
-                    else  if(operator.equals(MonadicOperator.DIV_SLASH))
-                        lvalue[i] = lvalue[i] / lvalue[i+1];
-                    else  if(operator.equals(MonadicOperator.MIN_SLASH))
-                        lvalue[i] = lvalue[i] - lvalue[i+1];
-                    else
-                            lvalue[i] = lvalue[i];
-                    
-                }
-                return (Object) lvalue[0];
-            }
-        }
-    }
 
 
     // ---------------------------------------------------------------------------------------------
@@ -730,47 +354,9 @@ public final class Interpreter {
         return struct;
     }
 
-    // ---------------------------------------------------------------------------------------------
 
-    private Void ifStmt (IfNode node) {
-        Object cond = get(node.condition);
-        Type condType = reactor.get(node.condition, "type");
-        if(condType instanceof IntType)
-        {
-            if ((long) get(node.condition) != 0)
-                get(node.trueStatement);
-            else if (node.falseStatement != null)
-                get(node.falseStatement);
-        }
-        else
-        {
-            if ((double) get(node.condition) != 0.0)
-                get(node.trueStatement);
-            else if (node.falseStatement != null)
-                get(node.falseStatement);
-        }
 
-        return null;
-    }
 
-    // ---------------------------------------------------------------------------------------------
-
-    private Void whileStmt (WhileNode node) {
-        Object cond = get(node.condition);
-        Type condType = reactor.get(node.condition, "type");
-        if(condType instanceof IntType)
-        {
-            while ((long) get(node.condition) != 0)
-                get(node.body);
-        }
-        else
-        {
-            while ((double) get(node.condition) != 0.0)
-                get(node.body);
-        }
-
-        return null;
-    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -811,244 +397,79 @@ public final class Interpreter {
         storage.set(scope, name, value);
     }
 
-    // ------------------------------------ new functions ------------------------------------------
-
-    private Object arrayOp
-        (DiadicOperator operator, Object left, Object right, Type leftType, Type rightType) {
-        long[] aileft = new long[10000];
-        long[] airight = new long[10000];
-        double[] afleft = new double[10000];
-        double[] afright = new double[10000];
-        long ileft = 0;
-        long iright = 0;
-        double fleft = 0.0;
-        double fright = 0.0;
-
-        int llength = 1;
-        int rlength = 1;
-
-        boolean isfloat = leftType instanceof FloatType || rightType instanceof FloatType;
-        if(leftType instanceof ArrayType){
-            if(((ArrayType) leftType).componentType instanceof FloatType){
-                isfloat = true;
-            }
-        }
-        if(rightType instanceof ArrayType){
-            if(((ArrayType) rightType).componentType instanceof FloatType){
-                isfloat = true;
-            }
-        }
-        Object[] aleft = new Object[10000];
-        Object[] aright = new Object[10000];
-
-        if(leftType instanceof ArrayType)
-            aleft = (Object[]) left;
-
-        if(rightType instanceof ArrayType)
-            aright = (Object[]) right;
+    // --------------------------------- modified functions ----------------------------------------
 
 
-        // cast object into their values 
-        if (leftType instanceof ArrayType) {
-            if (((ArrayType) leftType).componentType instanceof IntType) {
-                aileft = castObjectArrayToLong(aleft);
-                llength = aileft.length;
-            } else if (((ArrayType) leftType).componentType instanceof FloatType) {
-                afleft = castObjectArrayToDouble(aleft);
-                llength = afleft.length;
-            }
-        } else {
-            if (leftType instanceof IntType) {
-                ileft = (long) left;
-            } else if (leftType instanceof FloatType)
-                fleft = (double) left;
-        }
-
-        if (rightType instanceof ArrayType) {
-            if (((ArrayType) rightType).componentType instanceof IntType) {
-                airight = castObjectArrayToLong(aright);
-                rlength = airight.length;
-            } else if (((ArrayType) rightType).componentType instanceof FloatType) {
-                afright = castObjectArrayToDouble(aright);
-                rlength = afright.length;
-            }
-        } else {
-            if (rightType instanceof IntType) {
-                iright = (long) right;
-            } else if (rightType instanceof FloatType)
-                fright = (double) right;
-        }
-
-        //convert long to double if necessary
-        if(isfloat)
+    private Void ifStmt (IfNode node) {
+        Object cond = get(node.condition);
+        Type condType = reactor.get(node.condition, "type");
+        if(condType instanceof IntType)
         {
-            if(leftType instanceof IntType)
-            {
-                fleft = (double) ileft;
-            }
-            else if(leftType instanceof  ArrayType)
-            {
-                if(((ArrayType) leftType).componentType instanceof IntType){
-                    afleft = castLongArrayToDouble(aileft);
-                }
-            }
-
-            if(rightType instanceof IntType)
-            {
-                fright = (double) iright;
-            }
-            else if(rightType instanceof  ArrayType)
-            {
-                if(((ArrayType) rightType).componentType instanceof IntType){
-                    afright = castLongArrayToDouble(airight);
-                }
-            }
+            if ((long) get(node.condition) != 0)
+                get(node.trueStatement);
+            else if (node.falseStatement != null)
+                get(node.falseStatement);
+        }
+        else
+        {
+            if ((double) get(node.condition) != 0.0)
+                get(node.trueStatement);
+            else if (node.falseStatement != null)
+                get(node.falseStatement);
         }
 
-        // Check if array have same length
-        if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
+        return null;
+    }
 
-            if (llength != rlength)
-                throw new Error("Length Error. Tried to process 2 arrays of different length.");
-
+    private Void whileStmt (WhileNode node) {
+        Object cond = get(node.condition);
+        Type condType = reactor.get(node.condition, "type");
+        if(condType instanceof IntType)
+        {
+            while ((long) get(node.condition) != 0)
+                get(node.body);
         }
-        Object Result[];
-        if (operator == DiadicOperator.CONCAT){
-            int length = llength + rlength;
-            Result = new Object[length];
+        else
+        {
+            while ((double) get(node.condition) != 0.0)
+                get(node.body);
+        }
 
-            if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
-                int i;
-                if (isfloat) {
-                    for (i = 0; i < llength; i++) {
-                        Result[i] = afleft[i];
-                    }
-                    for (i = 0; i < rlength; i++) {
-                        Result[llength + i] = afright[i];
-                    }
-                }
-                else {
-                    for (i = 0; i < llength; i++) {
-                        Result[i] = aileft[i];
-                    }
-                    for (i = 0; i < rlength; i++) {
-                        Result[llength + i] = airight[i];
-                    }
-                }
-            } else if (leftType instanceof ArrayType) {
-                int i;
-                if (isfloat) {
-                    for (i = 0; i < llength; i++) {
-                        Result[i] = afleft[i];
-                    }
-                    Result[i] = fright;
-                }
-                else {
-                    for (i = 0; i < llength; i++) {
-                        Result[i] = aileft[i];
-                    }
-                    Result[i] = iright;
-                }
-            } else {
-                if (isfloat) {
-                    Result[0] = fleft;
-                    for (int i = 0; i < rlength; i++) {
-                        Result[i+1] = afright[i];
-                    }
-                }
-                else {
-                    Result[0] = ileft;
-                    for (int i = 0; i < rlength; i++) {
-                        Result[i+1] = airight[i];
-                    }
-                }
-            }
+        return null;
+    }
+
+    // ------------------ new functions ------------------------------------------------------------
+
+    // ------------------------------------- Math function -----------------------------------------
+
+    private long factorial(long n)
+    {
+        if (n == 0) {
+            return 1;
         }
         else {
-            int length = Integer.max(llength, rlength);
-            Result = new Object[length];
-
-            if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
-                for (int i = 0; i < length; i++) {
-                    Object val = getvalDiadicOperation(operator, isfloat, aileft[i], airight[i], afleft[i], afright[i]);
-                    Result[i] = val;
-                }
-            } else if (leftType instanceof ArrayType) {
-                for (int i = 0; i < length; i++) {
-                    Object val = getvalDiadicOperation(operator, isfloat, aileft[i], iright, afleft[i], fright);
-                    Result[i] = val;
-                }
-            } else {
-                for (int i = 0; i < length; i++) {
-                    Object val = getvalDiadicOperation(operator, isfloat, ileft, airight[i], fleft, afright[i]);
-                    Result[i] = val;
-                }
-            }
+            return (n * factorial(n - 1));
         }
-        return Result;
     }
 
-    private Object getvalDiadicOperation (DiadicOperator operator, Boolean floating, long ileft, long iright, double fleft, double fright) {
-        if (floating)
-            switch (operator) {
-                case MULTIPLY:
-                    return fleft * fright;
-                case DIVIDE:
-                    return fleft / fright;
-                case REMAINDER:
-                    return fleft % fright;
-                case ADD:
-                    return fleft + fright;
-                case SUBTRACT:
-                    return fleft - fright;
-                case EXPONENT:
-                    return Math.pow(fleft, fright);
-                case GREATER:
-                    return  fleft > fright ? 1.0 : 0.0;
-                case LOWER:
-                    return fleft < fright ? 1.0 : 0.0;
-                case GREATER_EQUAL:
-                    return fleft >= fright ? 1.0 : 0.0;
-                case LOWER_EQUAL:
-                    return fleft <= fright ? 1.0 : 0.0;
-                case EQUALITY:
-                    return fleft == fright ? 1.0 : 0.0;
-                case NOT_EQUALS:
-                    return fleft != fright ? 1.0 : 0.0;
-                default:
-                    throw new Error("should not reach here");
-            }
-        else
-            switch (operator) {
-                case MULTIPLY:
-                    return ileft * iright;
-                case DIVIDE:
-                    return ileft / iright;
-                case REMAINDER:
-                    return ileft % iright;
-                case ADD:
-                    return ileft + iright;
-                case SUBTRACT:
-                    return ileft - iright;
-                case EXPONENT:
-                    return (long) Math.pow(ileft, iright);
-                case GREATER:
-                    return  ileft > iright ? (long) 1 : (long) 0;
-                case LOWER:
-                    return ileft < iright ? (long) 1 : (long)  0;
-                case GREATER_EQUAL:
-                    return ileft >= iright ? (long) 1 : (long) 0;
-                case LOWER_EQUAL:
-                    return ileft <= iright ? (long) 1 : (long) 0;
-                case EQUALITY:
-                    return ileft == iright ? (long) 1 : (long) 0;
-                case NOT_EQUALS:
-                    return ileft != iright ? (long) 1 : (long) 0;
-                default:
-                    throw new Error("should not reach here");
-            }
+    // factorial of double
+    // source : https://rosettacode.org/wiki/Gamma_function#Java
+    private double la_gamma(double x) {
+        double[] p = {0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+            771.32342877765313, -176.61502916214059, 12.507343278686905,
+            -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7};
+        int g = 7;
+        if (x < 0.5) return Math.PI / (Math.sin(Math.PI * x) * la_gamma(1 - x));
+
+        double a = p[0];
+        double t = x + g + 0.5;
+        for (int i = 1; i < p.length; i++) {
+            a += p[i] / (x + i);
+        }
+        return Math.sqrt(2*Math.PI)*Math.pow(t, x+0.5)*Math.exp(-t)*a;
     }
 
+    // ---------------------------------Type Conversion function -----------------------------------
     public Long castObjectToLong(Object object) {
         return Long.valueOf(object.toString());
     }
@@ -1082,6 +503,413 @@ public final class Interpreter {
         }
         return doubles;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    private Object diadicExpression (DiadicExpressionNode node) {
+        Type leftType = reactor.get(node.left, "type");
+        Type rightType = reactor.get(node.right, "type");
+
+        Object left = get(node.left);
+        Object right = get(node.right);
+
+        DiadicOperator operator = node.operator;
+
+        return diadicExpressionCalculate(leftType,rightType,left,right,operator);
+    }
+
+    private Object diadicExpressionCalculate(Type leftType, Type rightType, Object left, Object right, DiadicOperator operator)
+    {
+        // Cases where both operands should not be evaluated.
+        switch (operator) {
+            case OR:
+                return booleanOp(left,right, false);
+            case AND:
+                return booleanOp(left,right, true);
+        }
+
+        if (operator == DiadicOperator.ADD && (leftType instanceof StringType || rightType instanceof StringType))
+            return convertToString(left) + convertToString(right);
+
+        boolean floating = istypefloat(leftType) || istypefloat(rightType);
+        boolean numeric = leftType instanceof FloatType || rightType instanceof FloatType || leftType instanceof IntType || rightType instanceof IntType;
+        boolean array = leftType instanceof ArrayType || rightType instanceof ArrayType;
+
+        if (array)
+            return arrayOp(operator, left, right, leftType, rightType,floating);
+        else if (numeric)
+            return numericOp(operator, floating, (Number) left, (Number) right);
+
+        switch (operator) {
+            case EQUALITY:
+                return leftType.isPrimitive() ? left.equals(right) : left == right;
+            case NOT_EQUALS:
+                return leftType.isPrimitive() ? !left.equals(right) : left != right;
+        }
+
+        throw new Error("should not reach here");
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    private boolean booleanOp (Object left, Object right, boolean isAnd) {
+        return isAnd
+            ? (boolean) left && (boolean) right
+            : (boolean) left || (boolean) right;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    private Object numericOp
+        (DiadicOperator operator, boolean floating, Number left, Number right) {
+        long ileft, iright;
+        double fleft, fright;
+
+        fleft = left.doubleValue();
+        fright = right.doubleValue();
+
+        ileft = left.longValue();
+        iright = right.longValue();
+
+        Object result;
+
+        switch (operator) {
+            case MULTIPLY:
+                return floating ? (Object) (fleft * fright) : (Object) (ileft * iright);
+            case DIVIDE:
+                return floating ? (Object) (fleft / fright) : (Object) (ileft / iright);
+            case REMAINDER:
+                return floating ? (Object) (fleft % fright) : (Object) (ileft % iright);
+            case ADD:
+                return floating ? (Object) (fleft + fright) : (Object) (ileft + iright);
+            case SUBTRACT:
+                return floating ? (Object) (fleft - fright) : (Object) (ileft - iright);
+            case EXPONENT:
+                return floating ? (Object) Math.pow(fleft, fright) : (Object) ((long) Math.pow(ileft, iright));
+            case GREATER:
+                return floating ? (Object) (fleft > fright ? 1.0 : 0.0) : (Object) (ileft > iright ? (long) 1 : (long) 0);
+            case LOWER:
+                return floating ? (Object) (fleft < fright ? 1.0 : 0.0) : (Object) (ileft < iright ? (long) 1 : (long) 0);
+            case GREATER_EQUAL:
+                return floating ? (Object) (fleft >= fright ? 1.0 : 0.0)  : (Object) (ileft >= iright ?  (long) 1 : (long) 0);
+            case LOWER_EQUAL:
+                return floating ? (Object) (fleft <= fright ? 1.0 : 0.0) : (Object) (ileft <= iright ? (long) 1 :(long)  0);
+            case EQUALITY:
+                return floating ? (Object) (fleft == fright ? 1.0 : 0.0) : (Object) (ileft == iright ? (long) 1 : (long) 0);
+            case NOT_EQUALS:
+                return floating ? (Object) (fleft != fright ? 1.0 : 0.0) : (Object) (ileft != iright ? (long) 1 : (long) 0);
+            case CONCAT:
+                return floating ? new Object[]{fleft, fright} : new Object[]{ileft, iright};
+            default:
+                throw new Error("should not reach here");
+        }
+    }
+
+
+
+    private Object monadicExpression (MonadicExpressionNode node) {
+        Type opType = reactor.get(node.operand, "type");
+        Object operand = get(node.operand);
+        MonadicOperator operator = node.operator;
+        return monadicExpressionCalculate(opType,operand,operator);
+    }
+
+    private Object monadicExpressionCalculate(Type opType, Object operand, MonadicOperator operator)
+    {
+        if(opType instanceof IntType || opType instanceof FloatType)
+        {
+            return monadicOp(operator,opType,operand);
+        }
+        else if(opType instanceof ArrayType)
+        {
+            return monadicOpArray(operator,opType,operand);
+        }
+
+        throw new Error("should not reach here");
+    }
+
+    private Object monadicOp(MonadicOperator operator, Type opType, Object operand)
+    {
+        boolean floating = opType instanceof FloatType;
+        double fvalue = 1.0;
+        long lvalue = 1;
+
+        if(floating)
+            fvalue = (double) operand;
+        else
+            lvalue = (long) operand;
+
+        switch (operator) {
+            case NOT:
+                return floating ? (Object) la_gamma(fvalue) : (Object) factorial(lvalue);
+            case GRAB_LAST:
+                return floating ? (Object) fvalue : (Object) lvalue;
+            case SUM_SLASH:
+                return floating ? (Object) fvalue : (Object) lvalue;
+            case MULT_SLASH:
+                return floating ? (Object) fvalue : (Object) lvalue;
+            case MIN_SLASH:
+                return floating ? (Object) fvalue : (Object) lvalue;
+            case DIV_SLASH:
+                return floating ? (Object) fvalue : (Object) lvalue;
+            case SELF_ADD:
+                return floating ? (Object) (fvalue + fvalue) : (Object) (lvalue + lvalue);
+            case SELF_MULT:
+                return floating ?  (Object) (fvalue * fvalue) : (Object) (lvalue * lvalue);
+            case HASHTAG:
+                return floating ? (Object) 1.0 : (Object) ((long) 1);
+            default:
+                return floating ? (Object) fvalue : (Object) lvalue;
+        }
+    }
+
+    private Object monadicOpArray(MonadicOperator  operator, Type opType, Object operand)
+    {
+        boolean floating = ((ArrayType) opType).componentType instanceof FloatType;
+        double[] fvalue = {0};
+        long[] lvalue = {0};
+        int length;
+        if(floating) {
+            fvalue = castObjectArrayToDouble((Object[]) operand);
+            length = fvalue.length;
+        }
+        else {
+            lvalue = castObjectArrayToLong((Object[]) operand);
+            length =  lvalue.length;
+        }
+        Object[] result = new Object[length];
+
+        if( operator.equals(MonadicOperator.NOT)|| operator.equals(MonadicOperator.SELF_ADD) || operator.equals(MonadicOperator.SELF_MULT))
+        {
+            for(int i = 0; i < length; i++)
+            {
+                if(operator.equals(MonadicOperator.NOT))
+                    result[i] = floating ? (Object) la_gamma(fvalue[i]) : (Object) factorial(lvalue[i]);
+                else if(operator.equals(MonadicOperator.SELF_ADD))
+                    result[i] = floating ? (Object) (fvalue[i] + fvalue[i]) : (Object) (lvalue[i] + lvalue[i]);
+                else // operator.equals(MonadicOperator.SELF_MULT)
+                    result[i] = floating ? (Object) (fvalue[i] * fvalue[i]) : (Object) (lvalue[i] * lvalue[i]);
+            }
+            return  result;
+        }
+        else if ( operator.equals(MonadicOperator.GRAB_LAST))
+        {
+            return floating ? (Object) (fvalue[length-1]) : (Object) (lvalue[length-1]) ;
+        }
+        else if (operator.equals(MonadicOperator.HASHTAG))
+        {
+            return length;
+        }
+        else {
+            if(floating) {
+                for (int i = length - 2; i >= 0; i--) {
+                    if (operator.equals(MonadicOperator.SUM_SLASH))
+                        fvalue[i] = fvalue[i] + fvalue[i + 1];
+                    else if (operator.equals(MonadicOperator.MULT_SLASH))
+                        fvalue[i] = fvalue[i] * fvalue[i + 1];
+                    else if (operator.equals(MonadicOperator.DIV_SLASH))
+                        fvalue[i] = fvalue[i] / fvalue[i + 1];
+                    else if (operator.equals(MonadicOperator.MIN_SLASH))
+                        fvalue[i] = fvalue[i] - fvalue[i + 1];
+                    else
+                        fvalue[i] = fvalue[i];
+
+                }
+                return (Object) fvalue[0];
+            }
+            else
+            {
+                for(int i = length-2; i >= 0; i--)
+                {
+                    if(operator.equals(MonadicOperator.SUM_SLASH))
+                        lvalue[i] = lvalue[i] + lvalue[i+1];
+                    else  if(operator.equals(MonadicOperator.MULT_SLASH))
+                        lvalue[i] = lvalue[i] * lvalue[i+1];
+                    else  if(operator.equals(MonadicOperator.DIV_SLASH))
+                        lvalue[i] = lvalue[i] / lvalue[i+1];
+                    else  if(operator.equals(MonadicOperator.MIN_SLASH))
+                        lvalue[i] = lvalue[i] - lvalue[i+1];
+                    else
+                        lvalue[i] = lvalue[i];
+
+                }
+                return (Object) lvalue[0];
+            }
+        }
+    }
+
+    private boolean istypefloat(Type type)
+    {
+        boolean isfloat = type instanceof FloatType;
+        if(type instanceof ArrayType){
+            if(((ArrayType) type).componentType instanceof FloatType){
+                isfloat = true;
+            }
+        }
+        return isfloat;
+    }
+
+    private Object arrayOp
+        (DiadicOperator operator, Object left, Object right, Type leftType, Type rightType, boolean floating) {
+        long[] aileft = new long[10000];
+        long[] airight = new long[10000];
+        double[] afleft = new double[10000];
+        double[] afright = new double[10000];
+        long ileft = 0;
+        long iright = 0;
+        double fleft = 0.0;
+        double fright = 0.0;
+
+        int llength = 1;
+        int rlength = 1;
+
+        Object[] aleft = new Object[10000];
+        Object[] aright = new Object[10000];
+
+        if(leftType instanceof ArrayType)
+            aleft = (Object[]) left;
+
+        if(rightType instanceof ArrayType)
+            aright = (Object[]) right;
+
+
+        // cast object into their values 
+        if (leftType instanceof ArrayType) {
+            if (((ArrayType) leftType).componentType instanceof IntType) {
+                aileft = castObjectArrayToLong(aleft);
+                afleft = castLongArrayToDouble(aileft);
+                llength = aileft.length;
+            } else if (((ArrayType) leftType).componentType instanceof FloatType) {
+                afleft = castObjectArrayToDouble(aleft);
+                llength = afleft.length;
+            }
+        } else {
+            if (leftType instanceof IntType) {
+                ileft = (long) left;
+                fleft = (double) ileft;
+            } else if (leftType instanceof FloatType)
+                fleft = (double) left;
+        }
+
+        if (rightType instanceof ArrayType) {
+            if (((ArrayType) rightType).componentType instanceof IntType) {
+                airight = castObjectArrayToLong(aright);
+                afright = castLongArrayToDouble(airight);
+                rlength = airight.length;
+            } else if (((ArrayType) rightType).componentType instanceof FloatType) {
+                afright = castObjectArrayToDouble(aright);
+                rlength = afright.length;
+            }
+        } else {
+            if (rightType instanceof IntType) {
+                iright = (long) right;
+                fright = (double) right;
+            } else if (rightType instanceof FloatType)
+                fright = (double) right;
+        }
+
+
+        // Check if array have same length
+        if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
+
+            if (llength != rlength)
+                throw new Error("Length Error. Tried to process 2 arrays of different length.");
+
+        }
+        Object Result[];
+        if (operator == DiadicOperator.CONCAT){
+            int length = llength + rlength;
+            Result = new Object[length];
+
+            int pointer = 0;
+
+            if(leftType instanceof ArrayType)
+            {
+                for (int i = 0; i < llength; i++) {
+                    if (floating)
+                        Result[i] = afleft[i];
+                    else
+                        Result[i] = aileft[i];
+
+                    pointer++;
+                }
+            }
+            else
+            {
+                Result[0] = floating ? (Object) fleft : (Object) ileft;
+                pointer = 1;
+            }
+
+            if(rightType instanceof ArrayType)
+            {
+                for (int i = 0; i < rlength; i++) {
+                    if (floating)
+                        Result[i+pointer] = afright[i];
+                    else
+                        Result[i+pointer] = airight[i];
+                }
+            }
+            else
+            {
+                Result[pointer] = floating ? (Object) fright : (Object) iright;
+            }
+        }
+        else {
+            int length = Integer.max(llength, rlength);
+            Result = new Object[length];
+
+            if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
+                for (int i = 0; i < length; i++) {
+                    Object val = getvalDiadicOperation(operator, floating, aileft[i], airight[i], afleft[i], afright[i]);
+                    Result[i] = val;
+                }
+            } else if (leftType instanceof ArrayType) {
+                for (int i = 0; i < length; i++) {
+                    Object val = getvalDiadicOperation(operator, floating, aileft[i], iright, afleft[i], fright);
+                    Result[i] = val;
+                }
+            } else {
+                for (int i = 0; i < length; i++) {
+                    Object val = getvalDiadicOperation(operator, floating, ileft, airight[i], fleft, afright[i]);
+                    Result[i] = val;
+                }
+            }
+        }
+        return Result;
+    }
+
+    private Object getvalDiadicOperation (DiadicOperator operator, Boolean floating, long ileft, long iright, double fleft, double fright) {
+        switch (operator) {
+            case MULTIPLY:
+                return floating ? (Object) (fleft * fright) : (Object) (ileft * iright);
+            case DIVIDE:
+                return floating ? (Object) (fleft / fright) : (Object) (ileft / iright);
+            case REMAINDER:
+                return floating ? (Object) (fleft % fright) : (Object) (ileft % iright);
+            case ADD:
+                return floating ? (Object) (fleft + fright) : (Object) (ileft + iright);
+            case SUBTRACT:
+                return floating ? (Object) (fleft - fright) : (Object) (ileft - iright);
+            case EXPONENT:
+                return floating ? (Object) Math.pow(fleft, fright) : (Object) ((long) Math.pow(ileft, iright));
+            case GREATER:
+                return floating ? (Object) (fleft > fright ? 1.0 : 0.0) : (Object) (ileft > iright ? (long) 1 : (long) 0);
+            case LOWER:
+                return floating ? (Object) (fleft < fright ? 1.0 : 0.0) : (Object) (ileft < iright ? (long) 1 : (long) 0);
+            case GREATER_EQUAL:
+                return floating ? (Object) (fleft >= fright ? 1.0 : 0.0) : (Object) (ileft >= iright ? (long) 1 : (long) 0);
+            case LOWER_EQUAL:
+                return floating ? (Object) (fleft <= fright ? 1.0 : 0.0) : (Object) (ileft <= iright ? (long) 1 : (long) 0);
+            case EQUALITY:
+                return floating ? (Object) (fleft == fright ? 1.0 : 0.0) : (Object) (ileft == iright ? (long) 1 : (long) 0);
+            case NOT_EQUALS:
+                return floating ? (Object) (fleft != fright ? 1.0 : 0.0) : (Object) (ileft != iright ? (long) 1 : (long) 0);
+            default:
+                throw new Error("should not reach here");
+        }
+    }
+
+
 
     private Object monadicForkExpression (MonadicForkNode node) {
         Type type = reactor.get(node.operand, "type");

@@ -619,32 +619,26 @@ public final class SemanticAnalysis
 
     private void binaryEquality (Rule r, DiadicExpressionNode node, Type left, Type right)
     {
-        Boolean isfloat = left instanceof FloatType || right instanceof FloatType;
-        if(left instanceof ArrayType || right instanceof ArrayType)
+        boolean isfloat = isFloat(left) || isFloat(right);
+        boolean isArray = isArray(left) || isArray(right);
+        if (!isComparableTo(left, right))
+            r.errorFor(format("Trying to compare incomparable types %s and %s", left, right),
+                node);
+
+        if(isArray)
         {
-
-            if(left instanceof ArrayType)
-                if(((ArrayType) left).componentType instanceof FloatType)
-                    isfloat = true;
-            if(right instanceof ArrayType)
-                if(((ArrayType) right).componentType instanceof FloatType)
-                    isfloat = true;
-
             if(isfloat)
                 r.set(0, new ArrayType(FloatType.INSTANCE));
             else
                 r.set(0, new ArrayType(IntType.INSTANCE));
-            return;
         }
-
-        if(isfloat)
-            r.set(0, FloatType.INSTANCE);
         else
-            r.set(0, IntType.INSTANCE);
-
-        if (!isComparableTo(left, right))
-            r.errorFor(format("Trying to compare incomparable types %s and %s", left, right),
-                node);
+        {
+            if(isfloat)
+                r.set(0, FloatType.INSTANCE);
+            else
+                r.set(0, IntType.INSTANCE);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

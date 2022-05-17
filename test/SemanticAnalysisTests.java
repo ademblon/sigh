@@ -265,22 +265,7 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
             "Trying to access missing field z on struct P");
     }
 
-    // ---------------------------------------------------------------------------------------------
 
-    @Test
-    public void testIfWhile () {
-        successInput("if (1) return 1 else return 2");
-        successInput("if (0) return 1 else return 2");
-        successInput("if (1.0) return 1 else if (17) return 2 else return 3 ");
-        successInput("if (0.0) return 1 else if (25.5) return 2 else return 3 ");
-
-        //todo make it work
-        successInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
-
-        successInput("if 1 return 1");
-        successInput("while 1 return 1");
-
-    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -497,6 +482,23 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return [1, 2, 3] (+ * +) 1");
         successInput("return (-/ * ./) [1, 2]");
         successInput("return 4 (- / /) [1, 4, 2]");
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    @Test
+    public void testIfWhile () {
+        successInput("if (1) return 1 else return 2");
+        successInput("if (0) return 1 else return 2");
+        successInput("if (1.0) return 1 else if (17) return 2 else return 3 ");
+        successInput("if (0.0) return 1 else if (25.5) return 2 else return 3 ");
+
+
+        successInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
+
+        successInput("if 1 return 1");
+        successInput("while 1 return 1");
+
     }
 
 
