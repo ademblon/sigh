@@ -115,8 +115,6 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("\"hello\"", "hello");
         checkExpr("(42)", 42L);
         checkExpr("[1, 2, 3]", new Object[]{1L, 2L, 3L});
-        checkExpr("true", true);
-        checkExpr("false", false);
         checkExpr("null", Null.INSTANCE);
 
         //todo fix this
@@ -355,20 +353,20 @@ public final class InterpreterTests extends TestFixture {
     }
 
     @Test public void testBinariesIntOpArray(){
-         checkExpr("1 + [2]", new Object[]{3L}); 
-         checkExpr("1 + [1, 2, 3]", new Object[]{2L, 3L, 4L});
-         checkExpr("1 - [2]", new Object[]{-1L}); 
-         checkExpr("1 - [1, 2, 3]", new Object[]{0L, -1L, -2L}); 
-         checkExpr("2 * [2]", new Object[]{4L}); 
-         checkExpr("2 * [1, 2, 3]", new Object[]{2L, 4L, 6L});
-         checkExpr("6 / [2]", new Object[]{3L}); 
-         checkExpr("6 / [1, 2, 3]", new Object[]{6L, 3L, 2L}); 
-         checkExpr("6 % [2]", new Object[]{0L}); 
-         checkExpr("3 % [1, 2, 3]", new Object[]{0L, 1L, 0L});
-         checkExpr("2 < [2]", new Object[]{0L});
-         checkExpr("2 < [1, 2, 3]", new Object[]{0L, 0L, 1L});
-         checkExpr("2 > [2]", new Object[]{0L});
-         checkExpr("2 > [1, 2, 3]", new Object[]{1L, 0L, 0L});
+        checkExpr("1 + [2]", new Object[]{3L});
+        checkExpr("1 + [1, 2, 3]", new Object[]{2L, 3L, 4L});
+        checkExpr("1 - [2]", new Object[]{-1L});
+        checkExpr("1 - [1, 2, 3]", new Object[]{0L, -1L, -2L});
+        checkExpr("2 * [2]", new Object[]{4L});
+        checkExpr("2 * [1, 2, 3]", new Object[]{2L, 4L, 6L});
+        checkExpr("6 / [2]", new Object[]{3L});
+        checkExpr("6 / [1, 2, 3]", new Object[]{6L, 3L, 2L});
+        checkExpr("6 % [2]", new Object[]{0L});
+        checkExpr("3 % [1, 2, 3]", new Object[]{0L, 1L, 0L});
+        checkExpr("2 < [2]", new Object[]{0L});
+        checkExpr("2 < [1, 2, 3]", new Object[]{0L, 0L, 1L});
+        checkExpr("2 > [2]", new Object[]{0L});
+        checkExpr("2 > [1, 2, 3]", new Object[]{1L, 0L, 0L});
         checkExpr("2 <= [2]", new Object[]{1L});
         checkExpr("2 <= [1, 2, 3]", new Object[]{0L, 1L, 1L});
         checkExpr("2 >= [2]", new Object[]{1L});
@@ -418,16 +416,16 @@ public final class InterpreterTests extends TestFixture {
 
     @Test public void testBinariesArrayIntOpArray(){
 
-         checkExpr("[1] + [2]", new Object[]{3L}); 
-         checkExpr("[1, 2, 3] + [1, 2, 3]",  new Object[]{2L, 4L, 6L});
-         checkExpr("[1] - [2]",  new Object[]{-1L});
-         checkExpr("[1, 5 ,2] - [1, 2, 3]", new Object[]{0L, 3L, -1L});
-         checkExpr("[2] * [2]",  new Object[]{4L}); 
-         checkExpr("[5, 4, 3] * [1, 2, 3]",  new Object[]{5L, 8L, 9L});
-         checkExpr("[6] / [2]",  new Object[]{3L}); 
-         checkExpr("[2, 8, 9] / [1, 2, 3]",  new Object[]{2L, 4L, 3L}); 
-         checkExpr("[6] % [2]",  new Object[]{0L}); 
-         checkExpr("[4, 3, 2] % [1, 2, 3]",  new Object[]{0L, 1L, 2L});
+        checkExpr("[1] + [2]", new Object[]{3L});
+        checkExpr("[1, 2, 3] + [1, 2, 3]",  new Object[]{2L, 4L, 6L});
+        checkExpr("[1] - [2]",  new Object[]{-1L});
+        checkExpr("[1, 5 ,2] - [1, 2, 3]", new Object[]{0L, 3L, -1L});
+        checkExpr("[2] * [2]",  new Object[]{4L});
+        checkExpr("[5, 4, 3] * [1, 2, 3]",  new Object[]{5L, 8L, 9L});
+        checkExpr("[6] / [2]",  new Object[]{3L});
+        checkExpr("[2, 8, 9] / [1, 2, 3]",  new Object[]{2L, 4L, 3L});
+        checkExpr("[6] % [2]",  new Object[]{0L});
+        checkExpr("[4, 3, 2] % [1, 2, 3]",  new Object[]{0L, 1L, 2L});
         checkExpr("[2] < [2]", new Object[]{0L});
         checkExpr("[2, 2, 2] < [1, 2, 3]", new Object[]{0L, 0L, 1L});
         checkExpr("[2] > [2]", new Object[]{0L});
@@ -510,7 +508,6 @@ public final class InterpreterTests extends TestFixture {
 
         checkExpr("1 + \"a\"", "1a");
         checkExpr("\"a\" + 1", "a1");
-        checkExpr("\"a\" + true", "atrue");
 
         checkExpr("1 == 1", 1L);
         checkExpr("1 == 2", 0L);

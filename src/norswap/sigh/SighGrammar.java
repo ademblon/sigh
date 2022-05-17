@@ -49,7 +49,7 @@ public class SighGrammar extends Grammar
     public rule DOT             = word(".");
     public rule DOLLAR          = word("$");
     public rule COMMA           = word(",");
-    public rule EXPO        = word("^");
+    public rule EXPO            = word("^");
     public rule CONCAT          = word("<>");
 
     public rule _var            = reserved("var");
@@ -157,7 +157,7 @@ public class SighGrammar extends Grammar
         PERCENT     .as_val(DiadicOperator.REMAINDER),
         PLUS        .as_val(DiadicOperator.ADD),
         MINUS       .as_val(DiadicOperator.SUBTRACT),
-        EXPO    .as_val(DiadicOperator.EXPONENT),
+        EXPO        .as_val(DiadicOperator.EXPONENT),
         CONCAT      .as_val(DiadicOperator.CONCAT),
         EQUALS_EQUALS.as_val(DiadicOperator.EQUALITY),
         BANG_EQUAL  .as_val(DiadicOperator.NOT_EQUALS),

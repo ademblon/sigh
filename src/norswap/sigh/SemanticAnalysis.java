@@ -474,9 +474,6 @@ public final class SemanticAnalysis
                 {
                     r.set(0, FloatType.INSTANCE);
                 }
-
-                else if (!(opType instanceof BoolType))
-                    r.error("Trying to negate type: " + opType, node);
             });
     }
 
@@ -579,7 +576,7 @@ public final class SemanticAnalysis
 
     private void binaryComparison (Rule r, DiadicExpressionNode node, Type left, Type right)
     {
-        Boolean isfloat = left instanceof FloatType || right instanceof FloatType;
+        boolean isfloat = left instanceof FloatType || right instanceof FloatType;
         if(left instanceof ArrayType || right instanceof ArrayType)
         {
 
@@ -1022,9 +1019,6 @@ public final class SemanticAnalysis
                 {
                     r.set(0, FloatType.INSTANCE);
                 }
-
-                else if (!(opType instanceof BoolType))
-                    r.error("Trying to negate type: " + opType, node);
             });
     }
 

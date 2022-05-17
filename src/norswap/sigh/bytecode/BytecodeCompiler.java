@@ -277,9 +277,6 @@ public class BytecodeCompiler
         } else if (compType instanceof FloatType) {
             method.visitIntInsn(NEWARRAY, T_DOUBLE);
             storeOpcode = DASTORE;
-        } else if (compType instanceof BoolType) {
-            method.visitIntInsn(NEWARRAY, T_BOOLEAN);
-            storeOpcode = IASTORE;
         } else if (compType instanceof StringType) {
             method.visitTypeInsn(ANEWARRAY, "java/lang/String");
         } else if (compType instanceof TypeType) {
@@ -347,17 +344,17 @@ public class BytecodeCompiler
             case SUBTRACT:  numOperation(LSUB, DSUB, left, right); break;
 
             case EQUALITY:
-                comparison(node.operator, IFEQ, IF_ICMPEQ, IF_ACMPEQ, left, right); break;
+                comparison(node.operator, IFEQ, IF_ACMPEQ, left, right); break;
             case NOT_EQUALS:
-                comparison(node.operator, IFNE, IF_ICMPNE, IF_ACMPNE, left, right); break;
+                comparison(node.operator, IFNE, IF_ACMPNE, left, right); break;
             case GREATER:
-                comparison(node.operator, IFGT, -1, -1, left, right); break;
+                comparison(node.operator, IFGT, -1, left, right); break;
             case LOWER:
-                comparison(node.operator, IFLT, -1, -1, left, right); break;
+                comparison(node.operator, IFLT, -1, left, right); break;
             case GREATER_EQUAL:
-                comparison(node.operator, IFGE, -1, -1, left, right); break;
+                comparison(node.operator, IFGE, -1, left, right); break;
             case LOWER_EQUAL:
-                comparison(node.operator, IFLE, -1, -1, left, right); break;
+                comparison(node.operator, IFLE, -1, left, right); break;
 
             // default: throw an exception
         }
@@ -413,8 +410,6 @@ public class BytecodeCompiler
             invokeStatic(method, String.class, "valueOf", long.class);
         } else if (type instanceof FloatType) {
             invokeStatic(method, String.class, "valueOf", double.class);
-        } else if (type instanceof BoolType) {
-            invokeStatic(method, String.class, "valueOf", boolean.class);
         } else if (type instanceof NullType) {
             method.visitInsn(POP);
             method.visitLdcInsn("null");
@@ -461,7 +456,7 @@ public class BytecodeCompiler
 
     private void comparison (
             DiadicOperator op,
-            int doubleWidthOpcode, int boolOpcode, int objOpcode,
+            int doubleWidthOpcode, int objOpcode,
             Type left, Type right) {
 
         Label trueLabel = new Label();
@@ -482,8 +477,6 @@ public class BytecodeCompiler
             int opcode = op == LOWER || op == LOWER_EQUAL ? DCMPG : DCMPL;
             method.visitInsn(opcode);
             method.visitJumpInsn(doubleWidthOpcode, trueLabel);
-        } else if (left instanceof BoolType && right instanceof BoolType) {
-            method.visitJumpInsn(boolOpcode, trueLabel);
         } else {
             method.visitJumpInsn(objOpcode, trueLabel);
         }
@@ -625,8 +618,6 @@ public class BytecodeCompiler
                 invokeStatic(method, Long.class, "valueOf", long.class);
             else if (type instanceof FloatType)
                 invokeStatic(method, Double.class, "valueOf", double.class);
-            else if (type instanceof BoolType)
-                invokeStatic(method, Boolean.class, "valueOf", boolean.class);
             method.visitInsn(ARETURN);
         } else {
             method.visitInsn(nodeAsmType(node.expression).getOpcode(IRETURN));
@@ -704,9 +695,6 @@ public class BytecodeCompiler
         }
         else if (decl instanceof SyntheticDeclarationNode) {
             switch (decl.name()) {
-                case "Bool":
-                    method.visitLdcInsn(org.objectweb.asm.Type.getType(boolean.class));
-                    break;
                 case "Int":
                     method.visitLdcInsn(org.objectweb.asm.Type.getType(long.class));
                     break;

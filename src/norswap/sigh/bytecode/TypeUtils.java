@@ -32,8 +32,6 @@ public final class TypeUtils {
     {
         if (type instanceof IntType)
             return long.class;
-        else if (type instanceof BoolType)
-            return boolean.class;
         else if (type instanceof FloatType)
             return double.class;
         else if (type instanceof VoidType)
@@ -67,8 +65,6 @@ public final class TypeUtils {
     {
         if (type instanceof IntType)
             return long[].class;
-        else if (type instanceof BoolType)
-            return boolean[].class;
         else if (type instanceof FloatType)
             return double[].class;
         else if (type instanceof VoidType)
@@ -98,8 +94,6 @@ public final class TypeUtils {
     {
         if (type instanceof IntType)
             return "J"; // long
-        else if (type instanceof BoolType)
-            return "Z"; // boolean
         else if (type instanceof FloatType)
             return "D"; // double
         else if (type instanceof VoidType)

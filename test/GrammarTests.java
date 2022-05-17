@@ -38,6 +38,7 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("5 + (42 + 3)", new DiadicExpressionNode(null, intlit(5), ADD, new ParenthesizedNode(null, new DiadicExpressionNode(null, intlit(42), ADD, intlit(3)))));
 
         successExpect("[1, 2, 3]", new ArrayLiteralNode(null, asList(intlit(1), intlit(2), intlit(3))));
+        successExpect("[[1, 2, 3],[1, 2]]", new ArrayLiteralNode(null, asList(new ArrayLiteralNode(null, asList(intlit(1), intlit(2), intlit(3))), new ArrayLiteralNode(null, asList(intlit(1), intlit(2))))));
         successExpect("true", new ReferenceNode(null, "true"));
         successExpect("false", new ReferenceNode(null, "false"));
         successExpect("null", new ReferenceNode(null, "null"));
