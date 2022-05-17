@@ -269,18 +269,17 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
 
     @Test
     public void testIfWhile () {
-        successInput("if (true) return 1 else return 2");
-        successInput("if (false) return 1 else return 2");
-        successInput("if (false) return 1 else if (true) return 2 else return 3 ");
-        successInput("if (false) return 1 else if (false) return 2 else return 3 ");
+        successInput("if (1) return 1 else return 2");
+        successInput("if (0) return 1 else return 2");
+        successInput("if (1.0) return 1 else if (17) return 2 else return 3 ");
+        successInput("if (0.0) return 1 else if (25.5) return 2 else return 3 ");
 
         //todo make it work
-        failureInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
+        successInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
 
-        failureInputWith("if 1 return 1",
-            "If statement with a non-boolean condition of type: Int");
-        failureInputWith("while 1 return 1",
-            "While statement with a non-boolean condition of type: Int");
+        successInput("if 1 return 1");
+        successInput("while 1 return 1");
+
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -302,11 +301,11 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
 
     @Test public void testUnconditionalReturn()
     {
-        successInput("fun f(): Int { if (true) return 1 else return 2 } ; return f()");
+        successInput("fun f(): Int { if (1) return 1 else return 2 } ; return f()");
 
         // TODO: would be nice if this pinpointed the if-statement as missing the return,
         //   not the whole function declaration
-        failureInputWith("fun f(): Int { if (true) return 1 } ; return f()",
+        failureInputWith("fun f(): Int { if (1) return 1 } ; return f()",
             "Missing return in function");
     }
 

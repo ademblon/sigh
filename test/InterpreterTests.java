@@ -273,18 +273,18 @@ public final class InterpreterTests extends TestFixture {
 
     // ---------------------------------------------------------------------------------------------
 
-    //todo MAKE IT WORK
-    /*
+
+
     @Test
     public void testIfWhile () {
-        check("if (true) return 1 else return 2", 1L);
-        check("if (false) return 1 else return 2", 2L);
-        check("if (false) return 1 else if (true) return 2 else return 3 ", 2L);
-        check("if (false) return 1 else if (false) return 2 else return 3 ", 3L);
+        check("if (17) return 1 else return 2", 1L);
+        check("if (0) return 1 else return 2", 2L);
+        check("if (0.0) return 1 else if (1) return 2 else return 3 ", 2L);
+        check("if (0.0) return 1 else if (0) return 2 else return 3 ", 3L);
 
 
         check("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ", null, "0\n1\n2\n");
-    } */
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -307,7 +307,7 @@ public final class InterpreterTests extends TestFixture {
 
     @Test public void testUnconditionalReturn()
     {
-        check("fun f(): Int { if (true) return 1 else return 2 } ; return f()", 1L);
+        check("fun f(): Int { if (1) return 1 else return 2 } ; return f()", 1L);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -362,14 +362,14 @@ public final class InterpreterTests extends TestFixture {
          checkExpr("6 / [1, 2, 3]", new Object[]{6L, 3L, 2L}); 
          checkExpr("6 % [2]", new Object[]{0L}); 
          checkExpr("3 % [1, 2, 3]", new Object[]{0L, 1L, 0L});
-         checkExpr("2 < [2]", new Object[]{0});
-         checkExpr("2 < [1, 2, 3]", new Object[]{0, 0, 1});
-         checkExpr("2 > [2]", new Object[]{0});
-         checkExpr("2 > [1, 2, 3]", new Object[]{1, 0, 0});
-        checkExpr("2 <= [2]", new Object[]{1});
-        checkExpr("2 <= [1, 2, 3]", new Object[]{0, 1, 1});
-        checkExpr("2 >= [2]", new Object[]{1});
-        checkExpr("2 >= [1, 2, 3]", new Object[]{1, 1, 0});
+         checkExpr("2 < [2]", new Object[]{0L});
+         checkExpr("2 < [1, 2, 3]", new Object[]{0L, 0L, 1L});
+         checkExpr("2 > [2]", new Object[]{0L});
+         checkExpr("2 > [1, 2, 3]", new Object[]{1L, 0L, 0L});
+        checkExpr("2 <= [2]", new Object[]{1L});
+        checkExpr("2 <= [1, 2, 3]", new Object[]{0L, 1L, 1L});
+        checkExpr("2 >= [2]", new Object[]{1L});
+        checkExpr("2 >= [1, 2, 3]", new Object[]{1L, 1L, 0L});
 
     }
 
@@ -408,14 +408,14 @@ public final class InterpreterTests extends TestFixture {
          checkExpr("[2, 8, 9] / [1, 2, 3]",  new Object[]{2L, 4L, 3L}); 
          checkExpr("[6] % [2]",  new Object[]{0L}); 
          checkExpr("[4, 3, 2] % [1, 2, 3]",  new Object[]{0L, 1L, 2L});
-        checkExpr("[2] < [2]", new Object[]{0});
-        checkExpr("[2, 2, 2] < [1, 2, 3]", new Object[]{0, 0, 1});
-        checkExpr("[2] > [2]", new Object[]{0});
-        checkExpr("[2, 2, 2] > [1, 2, 3]", new Object[]{1, 0, 0});
-        checkExpr("[2] <= [2]", new Object[]{1});
-        checkExpr("[2, 2, 2] <= [1, 2, 3]", new Object[]{0, 1, 1});
-        checkExpr("[2] >= [2]", new Object[]{1});
-        checkExpr("[2, 2, 2] >= [1, 2, 3]", new Object[]{1, 1, 0});
+        checkExpr("[2] < [2]", new Object[]{0L});
+        checkExpr("[2, 2, 2] < [1, 2, 3]", new Object[]{0L, 0L, 1L});
+        checkExpr("[2] > [2]", new Object[]{0L});
+        checkExpr("[2, 2, 2] > [1, 2, 3]", new Object[]{1L, 0L, 0L});
+        checkExpr("[2] <= [2]", new Object[]{1L});
+        checkExpr("[2, 2, 2] <= [1, 2, 3]", new Object[]{0L, 1L, 1L});
+        checkExpr("[2] >= [2]", new Object[]{1L});
+        checkExpr("[2, 2, 2] >= [1, 2, 3]", new Object[]{1L, 1L, 0L});
 
          
     }
@@ -479,18 +479,18 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("\"a\" + 1", "a1");
         checkExpr("\"a\" + true", "atrue");
 
-        checkExpr("1 == 1", 1);
-        checkExpr("1 == 2", 0);
+        checkExpr("1 == 1", 1L);
+        checkExpr("1 == 2", 0L);
         checkExpr("1.0 == 1.0", 1d);
         checkExpr("1.0 == 2.0", 0d);
         checkExpr("true == true", true);
         checkExpr("false == false", true);
         checkExpr("true == false", false);
         checkExpr("1 == 1.0", 1d);
-        checkExpr("[1] == [1]", new Object[]{1});
+        checkExpr("[1] == [1]", new Object[]{1L});
 
-        checkExpr("1 != 1", 0);
-        checkExpr("1 != 2", 1);
+        checkExpr("1 != 1", 0L);
+        checkExpr("1 != 2", 1L);
         checkExpr("1.0 != 1.0", 0d);
         checkExpr("1.0 != 2.0", 1d);
         checkExpr("true != true", false);
@@ -499,7 +499,7 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("1 != 1.0", 0d);
 
         checkExpr("\"hi\" != \"hi2\"", true);
-        checkExpr("[1] != [1]", new Object[]{0});
+        checkExpr("[1] != [1]", new Object[]{0L});
 
         // test short circuit
         //TODO WTF IS THAT

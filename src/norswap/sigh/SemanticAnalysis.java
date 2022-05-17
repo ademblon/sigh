@@ -920,8 +920,8 @@ public final class SemanticAnalysis
         .using(node.condition, "type")
         .by(r -> {
             Type type = r.get(0);
-            if (!((type instanceof BoolType))) {
-                r.error("If statement with a non-boolean condition of type: " + type,
+            if (!((type instanceof IntType || type instanceof FloatType))) {
+                r.error("If statement with a non-number condition of type: " + type,
                     node.condition);
             }
         });
@@ -939,8 +939,8 @@ public final class SemanticAnalysis
         .using(node.condition, "type")
         .by(r -> {
             Type type = r.get(0);
-            if (!(type instanceof BoolType)) {
-                r.error("While statement with a non-boolean condition of type: " + type,
+            if (!(type instanceof IntType || type instanceof FloatType)) {
+                r.error("While statement with a non-number condition of type: " + type,
                     node.condition);
             }
         });

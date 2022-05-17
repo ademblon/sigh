@@ -272,17 +272,17 @@ public final class Interpreter {
                 case SUBTRACT:
                     return ileft - iright;
                 case GREATER:
-                    return ileft > iright ? 1 : 0;
+                    return ileft > iright ? (long) 1 : (long) 0;
                 case LOWER:
-                    return ileft < iright ? 1 : 0;
+                    return ileft < iright ? (long) 1 : (long) 0;
                 case GREATER_EQUAL:
-                    return ileft >= iright ? 1 : 0;
+                    return ileft >= iright ?  (long) 1 : (long) 0;
                 case LOWER_EQUAL:
-                    return ileft <= iright ? 1 : 0;
+                    return ileft <= iright ? (long) 1 :(long)  0;
                 case EQUALITY:
-                    return ileft == iright ? 1 : 0;
+                    return ileft == iright ? (long) 1 : (long) 0;
                 case NOT_EQUALS:
-                    return ileft != iright ? 1 : 0;
+                    return ileft != iright ? (long) 1 : (long) 0;
                 default:
                     throw new Error("should not reach here");
             }
@@ -677,18 +677,42 @@ public final class Interpreter {
     // ---------------------------------------------------------------------------------------------
 
     private Void ifStmt (IfNode node) {
-        if (get(node.condition))
-            get(node.trueStatement);
-        else if (node.falseStatement != null)
-            get(node.falseStatement);
+        Object cond = get(node.condition);
+        Type condType = reactor.get(node.condition, "type");
+        if(condType instanceof IntType)
+        {
+            if ((long) get(node.condition) != 0)
+                get(node.trueStatement);
+            else if (node.falseStatement != null)
+                get(node.falseStatement);
+        }
+        else
+        {
+            if ((double) get(node.condition) != 0.0)
+                get(node.trueStatement);
+            else if (node.falseStatement != null)
+                get(node.falseStatement);
+        }
+
         return null;
     }
 
     // ---------------------------------------------------------------------------------------------
 
     private Void whileStmt (WhileNode node) {
-        while (get(node.condition))
-            get(node.body);
+        Object cond = get(node.condition);
+        Type condType = reactor.get(node.condition, "type");
+        if(condType instanceof IntType)
+        {
+            while ((long) get(node.condition) != 0)
+                get(node.body);
+        }
+        else
+        {
+            while ((double) get(node.condition) != 0.0)
+                get(node.body);
+        }
+
         return null;
     }
 
@@ -900,17 +924,17 @@ public final class Interpreter {
                 case SUBTRACT:
                     return ileft - iright;
                 case GREATER:
-                    return  ileft > iright ? 1 : 0;
+                    return  ileft > iright ? (long) 1 : (long) 0;
                 case LOWER:
-                    return ileft < iright ? 1 : 0;
+                    return ileft < iright ? (long) 1 : (long)  0;
                 case GREATER_EQUAL:
-                    return ileft >= iright ? 1 : 0;
+                    return ileft >= iright ? (long) 1 : (long) 0;
                 case LOWER_EQUAL:
-                    return ileft <= iright ? 1 : 0;
+                    return ileft <= iright ? (long) 1 : (long) 0;
                 case EQUALITY:
-                    return ileft == iright ? 1 : 0;
+                    return ileft == iright ? (long) 1 : (long) 0;
                 case NOT_EQUALS:
-                    return ileft != iright ? 1 : 0;
+                    return ileft != iright ? (long) 1 : (long) 0;
                 default:
                     throw new Error("should not reach here");
             }
