@@ -410,9 +410,23 @@ public final class Interpreter {
             else if (node.falseStatement != null)
                 get(node.falseStatement);
         }
-        else
+        else if(condType instanceof FloatType)
         {
             if ((double) get(node.condition) != 0.0)
+                get(node.trueStatement);
+            else if (node.falseStatement != null)
+                get(node.falseStatement);
+        }
+        else if(((ArrayType) condType).componentType instanceof IntType)
+        {
+            if ( (long) ((Object[]) get(node.condition))[0] != 0)
+                get(node.trueStatement);
+            else if (node.falseStatement != null)
+                get(node.falseStatement);
+        }
+        else
+        {
+            if ( (double) ((Object[]) get(node.condition))[0] != 0.0)
                 get(node.trueStatement);
             else if (node.falseStatement != null)
                 get(node.falseStatement);

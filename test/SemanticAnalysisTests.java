@@ -472,6 +472,10 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("if (1.0) return 1 else if (17) return 2 else return 3 ");
         successInput("if (0.0) return 1 else if (25.5) return 2 else return 3 ");
 
+        successInput("if ([17]) return 1 else return 2");
+        successInput("if ([0]) return 1 else return 2");
+        successInput("if ([0.0]) return 1 else if (1) return 2 else return 3 ");
+        successInput("if ([0.0]) return 1 else if (0) return 2 else return 3 ");
 
         successInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
 

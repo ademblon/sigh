@@ -499,8 +499,6 @@ public final class SemanticAnalysis
                 binaryArithmetic(r, node, left, right);
             else if (isComparison(node.operator))
                 binaryComparison(r, node, left, right);
-            else if (isLogic(node.operator))
-                binaryLogic(r, node, left, right);
             else if (isEquality(node.operator))
                 binaryEquality(r, node, left, right);
         });
@@ -516,9 +514,6 @@ public final class SemanticAnalysis
         return op == GREATER || op == GREATER_EQUAL || op == LOWER || op == LOWER_EQUAL;
     }
 
-    private boolean isLogic (DiadicOperator op) {
-        return op == OR || op == AND;
-    }
 
     private boolean isEquality (DiadicOperator op) {
         return op == EQUALITY || op == NOT_EQUALS;
@@ -639,20 +634,6 @@ public final class SemanticAnalysis
             else
                 r.set(0, IntType.INSTANCE);
         }
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    private void binaryLogic (Rule r, DiadicExpressionNode node, Type left, Type right)
-    {
-        r.set(0, BoolType.INSTANCE);
-
-        if (!(left instanceof BoolType))
-            r.errorFor("Attempting to perform binary logic on non-boolean type: " + left,
-                node.left);
-        if (!(right instanceof BoolType))
-            r.errorFor("Attempting to perform binary logic on non-boolean type: " + right,
-                node.right);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -914,7 +895,7 @@ public final class SemanticAnalysis
         .using(node.condition, "type")
         .by(r -> {
             Type type = r.get(0);
-            if (!((type instanceof IntType || type instanceof FloatType))) {
+            if (!isCorrect(type)) {
                 r.error("If statement with a non-number condition of type: " + type,
                     node.condition);
             }

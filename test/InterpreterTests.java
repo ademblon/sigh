@@ -377,6 +377,11 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("3 ^ [1, 2, 3]", new Object[]{3L, 9L, 27L});
         checkExpr("6 <> [2]", new Object[]{6L, 2L});
         checkExpr("3 <> [1, 2, 3]", new Object[]{3L, 1L, 2L, 3L});
+        checkExpr("0 || [0]",  new Object[]{0L});
+        checkExpr("0 || [1, 17, 0]",  new Object[]{1L, 1L, 0L});
+        checkExpr("1 && [0]",  new Object[]{0L});
+        checkExpr("1 && [17]",  new Object[]{1L});
+        checkExpr("1 && [1, 117, 0]",  new Object[]{1L, 1L, 0L});
     }
 
     @Test public void testBinariesDoubleOpArray(){
@@ -403,6 +408,11 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("2.0 >= [1.0, 2.0, 3.0]", new Object[]{1d, 1d, 0d});
         checkExpr("6.0 <> [2.0]", new Object[]{6d, 2d});
         checkExpr("3.0 <> [1.0, 2.0, 3.0]", new Object[]{3d, 1d, 2d, 3d});
+        checkExpr("0.0 || [0.0]",  new Object[]{0d});
+        checkExpr("0.0 || [1.0, 17.0, 0.0]",  new Object[]{1d, 1d, 0d});
+        checkExpr("1.0 && [0.0]",  new Object[]{0d});
+        checkExpr("1.0 && [17.0]",  new Object[]{1d});
+        checkExpr("1.0 && [1.0, 117.0, 0.0]",  new Object[]{1d, 1d, 0d});
 
     }
 
@@ -433,6 +443,7 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("[0] || [0]",  new Object[]{0L});
         checkExpr("[0, 1, 0] || [1, 1, 0]",  new Object[]{1L, 1L, 0L});
         checkExpr("[1] && [0]",  new Object[]{0L});
+        checkExpr("[1] && [17]",  new Object[]{1L});
         checkExpr("[0, 1, 0] && [1, 1, 0]",  new Object[]{0L, 1L, 0L});
 
     }
@@ -460,6 +471,11 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("[2.0, 2.0, 2.0] >= [1.0, 2.0, 3.0]", new Object[]{1d, 1d, 0d});
         checkExpr("[6.0] <> [2.0]",  new Object[]{6d, 2d});
         checkExpr("[4.0, 3.0, 2.0] <> [1.0, 2.0, 3.0]",  new Object[]{4d, 3d, 2d, 1d, 2d, 3d});
+        checkExpr("[0.0] || [0.0]",  new Object[]{0d});
+        checkExpr("[0.0, 1.0, 0.0] || [1.0, 1.0, 0.0]",  new Object[]{1d, 1d, 0d});
+        checkExpr("[1.0] && [0.0]",  new Object[]{0d});
+        checkExpr("[1.0] && [17.0]",  new Object[]{1d});
+        checkExpr("[0.0, 1.0, 0.0] && [1.0, 1.0, 0.0]",  new Object[]{0d, 1d, 0d});
     }
 
     @Test public void testBinariesArrayIntDoubleOpArray(){
@@ -668,6 +684,11 @@ public final class InterpreterTests extends TestFixture {
         check("if (0) return 1 else return 2", 2L);
         check("if (0.0) return 1 else if (1) return 2 else return 3 ", 2L);
         check("if (0.0) return 1 else if (0) return 2 else return 3 ", 3L);
+
+        check("if ([17]) return 1 else return 2", 1L);
+        check("if ([0]) return 1 else return 2", 2L);
+        check("if ([0.0]) return 1 else if (1) return 2 else return 3 ", 2L);
+        check("if ([0.0]) return 1 else if (0) return 2 else return 3 ", 3L);
 
 
         check("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ", null, "0\n1\n2\n");
