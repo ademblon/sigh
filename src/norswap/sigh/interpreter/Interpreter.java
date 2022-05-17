@@ -244,6 +244,8 @@ public final class Interpreter {
                     return fleft + fright;
                 case SUBTRACT:
                     return fleft - fright;
+                case EXPONENT:
+                    return Math.pow(fleft, fright);
                 case GREATER:
                     return fleft > fright ? 1.0 : 0.0;
                 case LOWER:
@@ -256,6 +258,8 @@ public final class Interpreter {
                     return fleft == fright ? 1.0 : 0.0;
                 case NOT_EQUALS:
                     return fleft != fright ? 1.0 : 0.0;
+                case CONCAT:
+                    return new Object[]{fleft, fright};
                 default:
                     throw new Error("should not reach here");
             }
@@ -271,6 +275,8 @@ public final class Interpreter {
                     return ileft + iright;
                 case SUBTRACT:
                     return ileft - iright;
+                case EXPONENT:
+                    return (long) Math.pow(ileft, iright);
                 case GREATER:
                     return ileft > iright ? (long) 1 : (long) 0;
                 case LOWER:
@@ -283,6 +289,8 @@ public final class Interpreter {
                     return ileft == iright ? (long) 1 : (long) 0;
                 case NOT_EQUALS:
                     return ileft != iright ? (long) 1 : (long) 0;
+                case CONCAT:
+                    return new Object[]{ileft, iright};
                 default:
                     throw new Error("should not reach here");
             }
@@ -389,6 +397,10 @@ public final class Interpreter {
                     return fvalue;
                 case DIV_SLASH:
                     return fvalue;
+                case SELF_ADD:
+                    return fvalue + fvalue;
+                case SELF_MULT:
+                    return fvalue * fvalue;
                 case HASHTAG:
                     fvalue = 1;
                     return fvalue;
@@ -411,6 +423,10 @@ public final class Interpreter {
                     return lvalue;
                 case DIV_SLASH:
                     return lvalue;
+                case SELF_ADD:
+                    return lvalue + lvalue;
+                case SELF_MULT:
+                    return lvalue * lvalue;
                 case HASHTAG:
                     lvalue = 1;
                     return lvalue;
@@ -470,6 +486,26 @@ public final class Interpreter {
 
                 return  result;
             }
+            else if (operator.equals(MonadicOperator.SELF_ADD))
+            {
+                Object[] result = new Object[length];
+
+                for(int i = 0; i < length; i++)
+                {
+                    result[i] = fvalue[i] + fvalue[i];
+                }
+                return  result;
+            }
+            else if (operator.equals(MonadicOperator.SELF_MULT))
+            {
+                Object[] result = new Object[length];
+
+                for(int i = 0; i < length; i++)
+                {
+                    result[i] = fvalue[i] * fvalue[i];
+                }
+                return  result;
+            }
             else if ( operator.equals(MonadicOperator.GRAB_LAST))
             {
                 return (Object) fvalue[length-1];
@@ -507,6 +543,26 @@ public final class Interpreter {
                 for(int i = 0; i < length; i++)
                 {
                     result[i] = factorial(lvalue[i]);
+                }
+                return  result;
+            }
+            else if (operator.equals(MonadicOperator.SELF_ADD))
+            {
+                Object[] result = new Object[length];
+
+                for(int i = 0; i < length; i++)
+                {
+                    result[i] = lvalue[i] + lvalue[i];
+                }
+                return  result;
+            }
+            else if (operator.equals(MonadicOperator.SELF_MULT))
+            {
+                Object[] result = new Object[length];
+
+                for(int i = 0; i < length; i++)
+                {
+                    result[i] = lvalue[i] * lvalue[i];
                 }
                 return  result;
             }
@@ -768,8 +824,8 @@ public final class Interpreter {
         double fleft = 0.0;
         double fright = 0.0;
 
-        int llength = 0;
-        int rlength = 0;
+        int llength = 1;
+        int rlength = 1;
 
         boolean isfloat = leftType instanceof FloatType || rightType instanceof FloatType;
         if(leftType instanceof ArrayType){
@@ -856,30 +912,79 @@ public final class Interpreter {
                 throw new Error("Length Error. Tried to process 2 arrays of different length.");
 
         }
+        Object Result[];
+        if (operator == DiadicOperator.CONCAT){
+            int length = llength + rlength;
+            Result = new Object[length];
 
-        int length = Integer.max(llength, rlength);
-        Object Result[] = new Object[length];
-
-        if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
-            for (int i = 0; i < length; i++) {
-                Object val = getvalDiadicOperation(operator, isfloat, aileft[i], airight[i], afleft[i], afright[i]);
-                Result[i] = val;
+            if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
+                int i;
+                if (isfloat) {
+                    for (i = 0; i < llength; i++) {
+                        Result[i] = afleft[i];
+                    }
+                    for (i = 0; i < rlength; i++) {
+                        Result[llength + i] = afright[i];
+                    }
+                }
+                else {
+                    for (i = 0; i < llength; i++) {
+                        Result[i] = aileft[i];
+                    }
+                    for (i = 0; i < rlength; i++) {
+                        Result[llength + i] = airight[i];
+                    }
+                }
+            } else if (leftType instanceof ArrayType) {
+                int i;
+                if (isfloat) {
+                    for (i = 0; i < llength; i++) {
+                        Result[i] = afleft[i];
+                    }
+                    Result[i] = fright;
+                }
+                else {
+                    for (i = 0; i < llength; i++) {
+                        Result[i] = aileft[i];
+                    }
+                    Result[i] = iright;
+                }
+            } else {
+                if (isfloat) {
+                    Result[0] = fleft;
+                    for (int i = 0; i < rlength; i++) {
+                        Result[i+1] = afright[i];
+                    }
+                }
+                else {
+                    Result[0] = ileft;
+                    for (int i = 0; i < rlength; i++) {
+                        Result[i+1] = airight[i];
+                    }
+                }
             }
         }
-        else if(leftType instanceof ArrayType)
-        {
-            for (int i = 0; i < length; i++) {
-                Object val = getvalDiadicOperation(operator, isfloat, aileft[i],iright, afleft[i], fright);
-                Result[i] = val;
-            }
-        }
-        else{
-            for (int i = 0; i < length; i++) {
-                Object val = getvalDiadicOperation(operator, isfloat, ileft, airight[i], fleft, afright[i]);
-                Result[i] = val;
-            }
-        }
+        else {
+            int length = Integer.max(llength, rlength);
+            Result = new Object[length];
 
+            if (leftType instanceof ArrayType && rightType instanceof ArrayType) {
+                for (int i = 0; i < length; i++) {
+                    Object val = getvalDiadicOperation(operator, isfloat, aileft[i], airight[i], afleft[i], afright[i]);
+                    Result[i] = val;
+                }
+            } else if (leftType instanceof ArrayType) {
+                for (int i = 0; i < length; i++) {
+                    Object val = getvalDiadicOperation(operator, isfloat, aileft[i], iright, afleft[i], fright);
+                    Result[i] = val;
+                }
+            } else {
+                for (int i = 0; i < length; i++) {
+                    Object val = getvalDiadicOperation(operator, isfloat, ileft, airight[i], fleft, afright[i]);
+                    Result[i] = val;
+                }
+            }
+        }
         return Result;
     }
 
@@ -896,6 +1001,8 @@ public final class Interpreter {
                     return fleft + fright;
                 case SUBTRACT:
                     return fleft - fright;
+                case EXPONENT:
+                    return Math.pow(fleft, fright);
                 case GREATER:
                     return  fleft > fright ? 1.0 : 0.0;
                 case LOWER:
@@ -923,6 +1030,8 @@ public final class Interpreter {
                     return ileft + iright;
                 case SUBTRACT:
                     return ileft - iright;
+                case EXPONENT:
+                    return (long) Math.pow(ileft, iright);
                 case GREATER:
                     return  ileft > iright ? (long) 1 : (long) 0;
                 case LOWER:

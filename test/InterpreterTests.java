@@ -137,6 +137,10 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("3 / 2", 1L);
         checkExpr("2 % 3", 2L);
         checkExpr("3 % 2", 1L);
+        checkExpr("2 ^ 3", 8L);
+        checkExpr("3 ^ 2", 9L);
+        checkExpr("2 <> 3", new Object[]{2L, 3L});
+        checkExpr("3 <> 2", new Object[]{3L, 2L});
 
         checkExpr("1.0 + 2.0", 3.0d);
         checkExpr("2.0 - 1.0", 1.0d);
@@ -145,6 +149,10 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("3.0 / 2.0", 3d / 2d);
         checkExpr("2.0 % 3.0", 2.0d);
         checkExpr("3.0 % 2.0", 1.0d);
+        checkExpr("2.0 ^ 3.0", 8.0d);
+        checkExpr("3.0 ^ 2.0", 9.0d);
+        checkExpr("2.0 <> 3.0", new Object[]{2d, 3d});
+        checkExpr("3.0 <> 2.0", new Object[]{3d, 2d});
 
         checkExpr("1 + 2.0", 3.0d);
         checkExpr("2 - 1.0", 1.0d);
@@ -153,6 +161,10 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("3 / 2.0", 3d / 2d);
         checkExpr("2 % 3.0", 2.0d);
         checkExpr("3 % 2.0", 1.0d);
+        checkExpr("2 ^ 3.0", 8d);
+        checkExpr("3 ^ 2.0", 9d);
+        checkExpr("2 <> 3.0", new Object[]{2d, 3d});
+        checkExpr("3 <> 2.0", new Object[]{3d, 2d});
 
         checkExpr("1.0 + 2", 3.0d);
         checkExpr("2.0 - 1", 1.0d);
@@ -161,6 +173,10 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("3.0 / 2", 3d / 2d);
         checkExpr("2.0 % 3", 2.0d);
         checkExpr("3.0 % 2", 1.0d);
+        checkExpr("2.0 ^ 3", 8d);
+        checkExpr("3.0 ^ 2", 9d);
+        checkExpr("2.0 <> 3", new Object[]{2d, 3d});
+        checkExpr("3.0 <> 2", new Object[]{3d, 2d});
     }
 
 
@@ -370,21 +386,26 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("2 <= [1, 2, 3]", new Object[]{0L, 1L, 1L});
         checkExpr("2 >= [2]", new Object[]{1L});
         checkExpr("2 >= [1, 2, 3]", new Object[]{1L, 1L, 0L});
-
+        checkExpr("6 ^ [2]", new Object[]{36L});
+        checkExpr("3 ^ [1, 2, 3]", new Object[]{3L, 9L, 27L});
+        checkExpr("6 <> [2]", new Object[]{6L, 2L});
+        checkExpr("3 <> [1, 2, 3]", new Object[]{3L, 1L, 2L, 3L});
     }
 
     @Test public void testBinariesDoubleOpArray(){
 
-         checkExpr("1.0 + [2.0]", new Object[]{3d}); 
-         checkExpr("1.0 + [1.0, 2.0, 3.0]", new Object[]{2d, 3d, 4d});
-         checkExpr("1.0 - [2.0]", new Object[]{-1d}); 
-         checkExpr("1.0 - [1.0, 2.0, 3.0]", new Object[]{0d, -1d, -2d}); 
-         checkExpr("2.0 * [2.0]", new Object[]{4d}); 
-         checkExpr("2.0 * [1.0, 2.0, 3.0]", new Object[]{2d, 4d, 6d});
-         checkExpr("6.0 / [2.0]", new Object[]{3d}); 
-         checkExpr("6.0 / [1.0, 2.0, 3.0]", new Object[]{6d, 3d, 2d}); 
-         checkExpr("6.0 % [2.0]", new Object[]{0d}); 
-         checkExpr("3.0 % [1.0, 2.0, 3.0]", new Object[]{0d, 1d, 0d});
+        checkExpr("1.0 + [2.0]", new Object[]{3d});
+        checkExpr("1.0 + [1.0, 2.0, 3.0]", new Object[]{2d, 3d, 4d});
+        checkExpr("1.0 - [2.0]", new Object[]{-1d});
+        checkExpr("1.0 - [1.0, 2.0, 3.0]", new Object[]{0d, -1d, -2d});
+        checkExpr("2.0 * [2.0]", new Object[]{4d});
+        checkExpr("2.0 * [1.0, 2.0, 3.0]", new Object[]{2d, 4d, 6d});
+        checkExpr("6.0 / [2.0]", new Object[]{3d});
+        checkExpr("6.0 / [1.0, 2.0, 3.0]", new Object[]{6d, 3d, 2d});
+        checkExpr("6.0 % [2.0]", new Object[]{0d});
+        checkExpr("3.0 % [1.0, 2.0, 3.0]", new Object[]{0d, 1d, 0d});
+        checkExpr("6.0 ^ [2.0]", new Object[]{36.0d});
+        checkExpr("3.0 ^ [1.0, 2.0, 3.0]", new Object[]{3.0d, 9.0d, 27.0d});
         checkExpr("2.0 < [2.0]", new Object[]{0d});
         checkExpr("2.0 < [1.0, 2.0, 3.0]", new Object[]{0d, 0d, 1d});
         checkExpr("2.0 > [2.0]", new Object[]{0d});
@@ -393,6 +414,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("2.0 <= [1.0, 2.0, 3.0]", new Object[]{0d, 1d, 1d});
         checkExpr("2.0 >= [2.0]", new Object[]{1d});
         checkExpr("2.0 >= [1.0, 2.0, 3.0]", new Object[]{1d, 1d, 0d});
+        checkExpr("6.0 <> [2.0]", new Object[]{6d, 2d});
+        checkExpr("3.0 <> [1.0, 2.0, 3.0]", new Object[]{3d, 1d, 2d, 3d});
 
     }
 
@@ -416,21 +439,27 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("[2, 2, 2] <= [1, 2, 3]", new Object[]{0L, 1L, 1L});
         checkExpr("[2] >= [2]", new Object[]{1L});
         checkExpr("[2, 2, 2] >= [1, 2, 3]", new Object[]{1L, 1L, 0L});
+        checkExpr("[6] <> [2]",  new Object[]{6L, 2L});
+        checkExpr("[4, 3, 2] <> [1, 2, 3]",  new Object[]{4L, 3L, 2L, 1L, 2L, 3L});
+        checkExpr("[6] ^ [2]",  new Object[]{36L});
+        checkExpr("[4, 3, 2] ^ [1, 2, 3]",  new Object[]{4L, 9L, 8L});
 
-         
+
     }
 
     @Test public void testBinariesArrayDoubleOpArray(){
-         checkExpr("[1.0] + [2.0]", new Object[]{3d}); 
-         checkExpr("[1.0, 2.0, 3.0] + [1.0, 2.0, 3.0]",  new Object[]{2d, 4d, 6d});
-         checkExpr("[1.0] - [2.0]",  new Object[]{-1d});
-         checkExpr("[1.0, 5.0 ,2.0] - [1.0, 2.0, 3.0]", new Object[]{0d, 3d, -1d});
-         checkExpr("[2.0] * [2.0]",  new Object[]{4d}); 
-         checkExpr("[5.0, 4.0, 3.0] * [1.0, 2.0, 3.0]",  new Object[]{5d, 8d, 9d});
-         checkExpr("[6.0] / [2.0]",  new Object[]{3d}); 
-         checkExpr("[2.0, 8.0, 9.0] / [1.0, 2.0, 3.0]",  new Object[]{2d, 4d, 3d}); 
-         checkExpr("[6.0] % [2.0]",  new Object[]{0d});
-         checkExpr("[4.0, 3.0, 2.0] % [1.0, 2.0, 3.0]",  new Object[]{0d, 1d, 2d});
+        checkExpr("[1.0] + [2.0]", new Object[]{3d});
+        checkExpr("[1.0, 2.0, 3.0] + [1.0, 2.0, 3.0]",  new Object[]{2d, 4d, 6d});
+        checkExpr("[1.0] - [2.0]",  new Object[]{-1d});
+        checkExpr("[1.0, 5.0 ,2.0] - [1.0, 2.0, 3.0]", new Object[]{0d, 3d, -1d});
+        checkExpr("[2.0] * [2.0]",  new Object[]{4d});
+        checkExpr("[5.0, 4.0, 3.0] * [1.0, 2.0, 3.0]",  new Object[]{5d, 8d, 9d});
+        checkExpr("[6.0] / [2.0]",  new Object[]{3d});
+        checkExpr("[2.0, 8.0, 9.0] / [1.0, 2.0, 3.0]",  new Object[]{2d, 4d, 3d});
+        checkExpr("[6.0] % [2.0]",  new Object[]{0d});
+        checkExpr("[4.0, 3.0, 2.0] % [1.0, 2.0, 3.0]",  new Object[]{0d, 1d, 2d});
+        checkExpr("[6.0] ^ [2.0]",  new Object[]{36d});
+        checkExpr("[4.0, 3.0, 2.0] ^ [1.0, 2.0, 3.0]",  new Object[]{4d, 9d, 8d});
         checkExpr("[2.0] < [2.0]", new Object[]{0d});
         checkExpr("[2.0, 2.0, 2.0] < [1.0, 2.0, 3.0]", new Object[]{0d, 0d, 1d});
         checkExpr("[2.0] > [2.0]", new Object[]{0d});
@@ -439,6 +468,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("[2.0, 2.0, 2.0] <= [1.0, 2.0, 3.0]", new Object[]{0d, 1d, 1d});
         checkExpr("[2.0] >= [2.0]", new Object[]{1d});
         checkExpr("[2.0, 2.0, 2.0] >= [1.0, 2.0, 3.0]", new Object[]{1d, 1d, 0d});
+        checkExpr("[6.0] <> [2.0]",  new Object[]{6d, 2d});
+        checkExpr("[4.0, 3.0, 2.0] <> [1.0, 2.0, 3.0]",  new Object[]{4d, 3d, 2d, 1d, 2d, 3d});
     }
 
     @Test public void testBinariesArrayIntDoubleOpArray(){
@@ -452,6 +483,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("[2.0, 8.0, 9.0] / [1, 2, 3]",  new Object[]{2d, 4d, 3d});
         checkExpr("[6] % [2.0]",  new Object[]{0d});
         checkExpr("[4, 3, 2] % [1.0, 2.0, 3.0]",  new Object[]{0d, 1d, 2d});
+        checkExpr("[6] ^ [2.0]",  new Object[]{36.0d});
+        checkExpr("[4, 3, 2] ^ [1.0, 2.0, 3.0]",  new Object[]{4d, 9d, 8d});
         checkExpr("[2] < [2.0]", new Object[]{0d});
         checkExpr("[2, 2, 2] < [1.0, 2.0, 3.0]", new Object[]{0d, 0d, 1d});
         checkExpr("[2.0] > [2]", new Object[]{0d});
@@ -460,6 +493,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("[2.0, 2.0, 2.0] <= [1, 2, 3]", new Object[]{0d, 1d, 1d});
         checkExpr("[2] >= [2.0]", new Object[]{1d});
         checkExpr("[2, 2, 2] >= [1.0, 2.0, 3.0]", new Object[]{1d, 1d, 0d});
+        checkExpr("[6] <> [2.0]",  new Object[]{6d, 2d});
+        checkExpr("[4, 3, 2] <> [1.0, 2.0, 3.0]",  new Object[]{4d, 3d, 2d, 1d, 2d, 3d});
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -516,6 +551,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ [1, 2, 3]",6L);
         checkExpr(":/ [4, 6, 3]",2L);
         checkExpr("-/ [1, 3, 7]",5L);
+        checkExpr("+: [2, 8, 1]",new Object[]{4L, 16L, 2L});
+        checkExpr("*: [5, 3, 9]",new Object[]{25L, 9L, 81L});
         checkExpr("# [7, 12, 5, 8, 62, 32]", 6);
         checkExpr("! [1, 3, 5]",new Object[]{1L, 6L, 120L});
     }
@@ -529,6 +566,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ [1.0, 2.0, 3.0]",6d);
         checkExpr(":/ [4.0, 6.0, 3.0]",2d);
         checkExpr("-/ [1.0, 3.0, 7.0]",5d);
+        checkExpr("+: [2.0, 8.0, 1.0]",new Object[]{4d, 16d, 2d});
+        checkExpr("*: [5.0, 3.0, 9.0]",new Object[]{25d, 9d, 81d});
         checkExpr("# [3.0, 5.0, 6.0, 7.0]", 4);
         checkExpr("! [1.0, 3.0, 5.0]",new Object[]{1.0000000000000002d, 6.000000000000007d, 120.00000000000021d});
     }
@@ -542,6 +581,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ 2",2L);
         checkExpr(":/ 2",2L);
         checkExpr("-/ 2",2L);
+        checkExpr("+: 3",6L);
+        checkExpr("*: 3",9L);
         checkExpr("# 2", 1L);
         checkExpr("! 2",2L);
     }
@@ -555,6 +596,8 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ 1.1",1.1d);
         checkExpr(":/ 1.1",1.1d);
         checkExpr("-/ 1.1",1.1d);
+        checkExpr("+: 1.1",2.2d);
+        checkExpr("*: 1.1",1.2100000000000002d);
         checkExpr("# 1.1", 1.0d);
         checkExpr(" ! 1.5",1.3293403881791384d);
     }

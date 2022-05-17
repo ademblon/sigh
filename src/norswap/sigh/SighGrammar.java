@@ -49,6 +49,8 @@ public class SighGrammar extends Grammar
     public rule DOT             = word(".");
     public rule DOLLAR          = word("$");
     public rule COMMA           = word(",");
+    public rule EXPO        = word("^");
+    public rule CONCAT          = word("<>");
 
     public rule _var            = reserved("var");
     public rule _fun            = reserved("fun");
@@ -63,7 +65,9 @@ public class SighGrammar extends Grammar
     public rule MULT_SLASH      = word("./");
     public rule DIV_SLASH       = word(":/");
     public rule MIN_SLASH       = word("-/");
-    public rule HASHTAG          = word("#");
+    public rule HASHTAG         = word("#");
+    public rule SELF_ADD        = word("+:");
+    public rule SELF_MULT       = word("*:");
 
     public rule number =
         seq(opt('-'), choice('0', digit.at_least(1)));
@@ -153,6 +157,8 @@ public class SighGrammar extends Grammar
         PERCENT     .as_val(DiadicOperator.REMAINDER),
         PLUS        .as_val(DiadicOperator.ADD),
         MINUS       .as_val(DiadicOperator.SUBTRACT),
+        EXPO    .as_val(DiadicOperator.EXPONENT),
+        CONCAT      .as_val(DiadicOperator.CONCAT),
         EQUALS_EQUALS.as_val(DiadicOperator.EQUALITY),
         BANG_EQUAL  .as_val(DiadicOperator.NOT_EQUALS),
         LANGLE_EQUAL.as_val(DiadicOperator.LOWER_EQUAL),
@@ -169,7 +175,9 @@ public class SighGrammar extends Grammar
         MULT_SLASH  .as_val(MonadicOperator.MULT_SLASH),
         DIV_SLASH   .as_val(MonadicOperator.DIV_SLASH),
         MIN_SLASH   .as_val(MonadicOperator.MIN_SLASH),
-        HASHTAG      .as_val(MonadicOperator.HASHTAG),
+        HASHTAG     .as_val(MonadicOperator.HASHTAG),
+        SELF_ADD    .as_val(MonadicOperator.SELF_ADD),
+        SELF_MULT   .as_val(MonadicOperator.SELF_MULT),
         BANG        .as_val(MonadicOperator.NOT)
     );
 

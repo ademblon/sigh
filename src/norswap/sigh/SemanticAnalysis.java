@@ -509,7 +509,7 @@ public final class SemanticAnalysis
     // ---------------------------------------------------------------------------------------------
 
     private boolean isArithmetic (DiadicOperator op) {
-        return op == ADD || op == MULTIPLY || op == SUBTRACT || op == DIVIDE || op == REMAINDER;
+        return op == ADD || op == MULTIPLY || op == SUBTRACT || op == DIVIDE || op == REMAINDER || op == EXPONENT || op == CONCAT;
     }
 
     private boolean isComparison (DiadicOperator op) {
