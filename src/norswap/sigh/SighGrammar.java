@@ -65,6 +65,8 @@ public class SighGrammar extends Grammar
     public rule MULT_SLASH      = word("./");
     public rule DIV_SLASH       = word(":/");
     public rule MIN_SLASH       = word("-/");
+    public rule AND_SLASH       = word("&/");
+    public rule OR_SLASH        = word("|/");
     public rule HASHTAG         = word("#");
     public rule SELF_ADD        = word("+:");
     public rule SELF_MULT       = word("*:");
@@ -175,6 +177,8 @@ public class SighGrammar extends Grammar
         MULT_SLASH  .as_val(MonadicOperator.MULT_SLASH),
         DIV_SLASH   .as_val(MonadicOperator.DIV_SLASH),
         MIN_SLASH   .as_val(MonadicOperator.MIN_SLASH),
+        AND_SLASH   .as_val(MonadicOperator.AND_SLASH),
+        OR_SLASH    .as_val(MonadicOperator.OR_SLASH),
         HASHTAG     .as_val(MonadicOperator.HASHTAG),
         SELF_ADD    .as_val(MonadicOperator.SELF_ADD),
         SELF_MULT   .as_val(MonadicOperator.SELF_MULT),

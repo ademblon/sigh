@@ -644,6 +644,10 @@ public final class Interpreter {
                 return floating ? (Object) fvalue : (Object) lvalue;
             case MIN_SLASH:
                 return floating ? (Object) fvalue : (Object) lvalue;
+            case AND_SLASH:
+                return floating ? (Object) (fvalue != 0.0 ? 1.0 : 0.0) : (Object) (lvalue != 0 ? 1L : 0L);
+            case OR_SLASH:
+                return floating ? (Object) (fvalue != 0.0 ? 1.0 : 0.0) : (Object) (lvalue != 0 ? 1L : 0L);
             case DIV_SLASH:
                 return floating ? (Object) fvalue : (Object) lvalue;
             case SELF_ADD:
@@ -705,6 +709,10 @@ public final class Interpreter {
                         fvalue[i] = fvalue[i] / fvalue[i + 1];
                     else if (operator.equals(MonadicOperator.MIN_SLASH))
                         fvalue[i] = fvalue[i] - fvalue[i + 1];
+                    else if (operator.equals(MonadicOperator.AND_SLASH))
+                        fvalue[i] = (fvalue[i] > 0 && fvalue[i+1] > 0 ? 1.0 : 0.0);
+                    else if (operator.equals(MonadicOperator.OR_SLASH))
+                        fvalue[i] = (fvalue[i] > 0 || fvalue[i+1] > 0 ? 1.0 : 0.0);
                     else
                         fvalue[i] = fvalue[i];
 
@@ -723,6 +731,10 @@ public final class Interpreter {
                         lvalue[i] = lvalue[i] / lvalue[i+1];
                     else  if(operator.equals(MonadicOperator.MIN_SLASH))
                         lvalue[i] = lvalue[i] - lvalue[i+1];
+                    else if (operator.equals(MonadicOperator.AND_SLASH))
+                        lvalue[i] = (lvalue[i] > 0 && lvalue[i+1] > 0 ? 1L : 0L);
+                    else if (operator.equals(MonadicOperator.OR_SLASH))
+                        lvalue[i] = (lvalue[i] > 0 || lvalue[i+1] > 0 ? 1L : 0L);
                     else
                         lvalue[i] = lvalue[i];
 

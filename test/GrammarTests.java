@@ -39,10 +39,7 @@ public class GrammarTests extends AutumnTestFixture {
 
         successExpect("[1, 2, 3]", new ArrayLiteralNode(null, asList(intlit(1), intlit(2), intlit(3))));
         successExpect("[[1, 2, 3],[1, 2]]", new ArrayLiteralNode(null, asList(new ArrayLiteralNode(null, asList(intlit(1), intlit(2), intlit(3))), new ArrayLiteralNode(null, asList(intlit(1), intlit(2))))));
-        successExpect("true", new ReferenceNode(null, "true"));
-        successExpect("false", new ReferenceNode(null, "false"));
         successExpect("null", new ReferenceNode(null, "null"));
-        successExpect("!false", new MonadicExpressionNode(null, MonadicOperator.NOT, new ReferenceNode(null, "false")));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -290,6 +287,8 @@ public class GrammarTests extends AutumnTestFixture {
         successExpect("-/ [4, 3]", new MonadicExpressionNode(null, MIN_SLASH, new ArrayLiteralNode(null, asList(intlit(4), intlit(3)))));
         successExpect("./ 9", new MonadicExpressionNode(null, MULT_SLASH, intlit(9)));
         successExpect(":/ [10, 5, 6]", new MonadicExpressionNode(null, DIV_SLASH, new ArrayLiteralNode(null, asList(intlit(10), intlit(5), intlit(6)))));
+        successExpect("&/ [5, 0, 6]", new MonadicExpressionNode(null, AND_SLASH, new ArrayLiteralNode(null, asList(intlit(5), intlit(0), intlit(6)))));
+        successExpect("|/ [8, 2, 0]", new MonadicExpressionNode(null, OR_SLASH, new ArrayLiteralNode(null, asList(intlit(8), intlit(2), intlit(0)))));
         successExpect("# [7, 9, 3, 5, 8]", new MonadicExpressionNode(null, HASHTAG, new ArrayLiteralNode(null, asList(intlit(7), intlit(9), intlit(3), intlit(5), intlit(8)))));
         successExpect("+: [3, 4, 7, 8]", new MonadicExpressionNode(null, SELF_ADD, new ArrayLiteralNode(null, asList(intlit(3), intlit(4), intlit(7), intlit(8)))));
         successExpect("*: [2, 9, 5]", new MonadicExpressionNode(null, SELF_MULT, new ArrayLiteralNode(null, asList(intlit(2), intlit(9), intlit(5)))));

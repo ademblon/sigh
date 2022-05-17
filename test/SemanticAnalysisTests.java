@@ -60,15 +60,6 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return \"hello\"");
         successInput("return (42)");
         successInput("return [1, 2, 3]");
-
-        //todo fix this
-        /*
-        successInput("return true");
-        successInput("return false");
-        successInput("return null");
-        successInput("return !false");
-        successInput("return !true");
-        successInput("return !!true"); */
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -252,8 +243,6 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
     {
         successInput("fun f(): Int { if (1) return 1 else return 2 } ; return f()");
 
-        // TODO: would be nice if this pinpointed the if-statement as missing the return,
-        //   not the whole function declaration
         failureInputWith("fun f(): Int { if (1) return 1 } ; return f()",
             "Missing return in function");
     }
@@ -454,13 +443,11 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
     public void testIfWhile () {
         successInput("if (1) return 1 else return 2");
         successInput("if (0) return 1 else return 2");
+        successInput("if (&/ [1, 2, 3]) return 1 else return 2");
         successInput("if (1.0) return 1 else if (17) return 2 else return 3 ");
         successInput("if (0.0) return 1 else if (25.5) return 2 else return 3 ");
 
-        successInput("if ([17]) return 1 else return 2");
-        successInput("if ([0]) return 1 else return 2");
-        successInput("if ([0.0]) return 1 else if (1) return 2 else return 3 ");
-        successInput("if ([0.0]) return 1 else if (0) return 2 else return 3 ");
+        failureInputWith("if ([17]) return 1 else return 2", "If statement with a non-number type condition : Int[]");
 
         successInput("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ");
 

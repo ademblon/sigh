@@ -23,8 +23,6 @@ import static org.testng.Assert.assertThrows;
 
 public final class InterpreterTests extends TestFixture {
 
-    // TODO peeling
-
     // ---------------------------------------------------------------------------------------------
 
     private final SighGrammar grammar = new SighGrammar();
@@ -541,6 +539,11 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ [1, 2, 3]",6L);
         checkExpr(":/ [4, 6, 3]",2L);
         checkExpr("-/ [1, 3, 7]",5L);
+        checkExpr("&/ [8, 2, 4]",1L);
+        checkExpr("&/ [0, 8, 3]",0L);
+        checkExpr("|/ [5, 1, 9]",1L);
+        checkExpr("|/ [1, 0, 7]",1L);
+        checkExpr("|/ [0, 0, 0]",0L);
         checkExpr("+: [2, 8, 1]",new Object[]{4L, 16L, 2L});
         checkExpr("*: [5, 3, 9]",new Object[]{25L, 9L, 81L});
         checkExpr("# [7, 12, 5, 8, 62, 32]", 6);
@@ -556,6 +559,11 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ [1.0, 2.0, 3.0]",6d);
         checkExpr(":/ [4.0, 6.0, 3.0]",2d);
         checkExpr("-/ [1.0, 3.0, 7.0]",5d);
+        checkExpr("&/ [1.0, 3.0, 7.0]",1d);
+        checkExpr("|/ [1.0, 3.0, 7.0]",1d);
+        checkExpr("&/ [1.0, 0.0, 7.0]",0d);
+        checkExpr("|/ [1.0, 0.0, 7.0]",1.0d);
+        checkExpr("|/ [0.0, 0.0, 0.0]",0d);
         checkExpr("+: [2.0, 8.0, 1.0]",new Object[]{4d, 16d, 2d});
         checkExpr("*: [5.0, 3.0, 9.0]",new Object[]{25d, 9d, 81d});
         checkExpr("# [3.0, 5.0, 6.0, 7.0]", 4);
@@ -571,6 +579,10 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ 2",2L);
         checkExpr(":/ 2",2L);
         checkExpr("-/ 2",2L);
+        checkExpr("&/ 2",1L);
+        checkExpr("&/ 0",0L);
+        checkExpr("|/ 2",1L);
+        checkExpr("|/ 0",0L);
         checkExpr("+: 3",6L);
         checkExpr("*: 3",9L);
         checkExpr("# 2", 1L);
@@ -586,6 +598,10 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("./ 1.1",1.1d);
         checkExpr(":/ 1.1",1.1d);
         checkExpr("-/ 1.1",1.1d);
+        checkExpr("&/ 1.1",1.0d);
+        checkExpr("&/ 0.0",0d);
+        checkExpr("|/ 1.1",1.0d);
+        checkExpr("|/ 0.0",0d);
         checkExpr("+: 1.1",2.2d);
         checkExpr("*: 1.1",1.2100000000000002d);
         checkExpr("# 1.1", 1.0d);
@@ -682,16 +698,8 @@ public final class InterpreterTests extends TestFixture {
         check("if (0.0) return 1 else if (1) return 2 else return 3 ", 2L);
         check("if (0.0) return 1 else if (0) return 2 else return 3 ", 3L);
 
-        check("if ([17]) return 1 else return 2", 1L);
-        check("if ([0]) return 1 else return 2", 2L);
-        check("if ([0.0]) return 1 else if (1) return 2 else return 3 ", 2L);
-        check("if ([0.0]) return 1 else if (0) return 2 else return 3 ", 3L);
-
-        check("if ([17, 0]) return 1 else return 2", 1L);
-        check("if ([0, 4524]) return 1 else return 2", 2L);
-        check("if ([0.0, 1.0]) return 1 else if (1) return 2 else return 3 ", 2L);
-        check("if ([0.0, 0.0]) return 1 else if (0) return 2 else return 3 ", 3L);
-
+        check("if (&/ [1,0,3]) return 1 else return 2", 2L);
+        check("if (|/ [1,0,3]) return 1 else return 2", 1L);
 
         check("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ", null, "0\n1\n2\n");
     }

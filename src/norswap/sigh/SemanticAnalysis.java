@@ -449,31 +449,31 @@ public final class SemanticAnalysis
             .using(node.operand, "type")
             .by(r -> {
                 Type opType = r.get(0);
-                if(opType instanceof ArrayType)
-                {
-                    if(((ArrayType) opType).componentType instanceof IntType)
-                    {
-                        r.set(0, new ArrayType(IntType.INSTANCE));
-                    }
-                    else if(((ArrayType) opType).componentType instanceof FloatType)
-                    {
-                        r.set(0, new ArrayType(FloatType.INSTANCE));
-                    }
-                    else
-                    {
-                        //todo change this
-                        r.error(format("Error Unary, not correct array type : %s %s",node.operator.name().toLowerCase(),opType), node);
+                if (opType instanceof ArrayType) {
+                    if (((ArrayType) opType).componentType instanceof IntType) {
+                        if (node.operator == MonadicOperator.NOT || node.operator == MonadicOperator.SELF_ADD || node.operator == MonadicOperator.SELF_MULT) {
+                            r.set(0, new ArrayType(IntType.INSTANCE));
+                        }
+                        else {
+                            r.set(0, IntType.INSTANCE);
+                        }
+                    } else if (((ArrayType) opType).componentType instanceof FloatType) {
+                        if (node.operator == MonadicOperator.NOT || node.operator == MonadicOperator.SELF_ADD || node.operator == MonadicOperator.SELF_MULT) {
+                            r.set(0, new ArrayType(FloatType.INSTANCE));
+                        }
+                        else {
+                            r.set(0, FloatType.INSTANCE);
+                        }
+                    } else {
+                        r.error(format("Error Unary, not correct array type : %s %s", node.operator.name().toLowerCase(), opType), node);
                     }
 
-                }
-                else if( opType instanceof IntType)
-                {
+                } else if (opType instanceof IntType) {
                     r.set(0, IntType.INSTANCE);
-                }
-                else if(opType instanceof FloatType)
-                {
+                } else if (opType instanceof FloatType) {
                     r.set(0, FloatType.INSTANCE);
                 }
+
             });
     }
 
@@ -892,8 +892,8 @@ public final class SemanticAnalysis
         .using(node.condition, "type")
         .by(r -> {
             Type type = r.get(0);
-            if (!isCorrect(type)) {
-                r.error("If statement with a non-number condition of type: " + type,
+            if (!isNumeric(type)) {
+                r.error("If statement with a non-number type condition : " + type,
                     node.condition);
             }
         });
@@ -912,7 +912,7 @@ public final class SemanticAnalysis
         .by(r -> {
             Type type = r.get(0);
             if (!(type instanceof IntType || type instanceof FloatType)) {
-                r.error("While statement with a non-number condition of type: " + type,
+                r.error("While statement with a non-number type condition : " + type,
                     node.condition);
             }
         });
@@ -1065,6 +1065,15 @@ public final class SemanticAnalysis
                     throw new Error("Should not reach here");
                 }
             });
+    }
+
+    private boolean isNumeric(Type type)
+    {
+        if(type instanceof FloatType)
+            return true;
+        else if(type instanceof IntType)
+            return true;
+        else return false;
     }
 
     private boolean isFloat(Type type)

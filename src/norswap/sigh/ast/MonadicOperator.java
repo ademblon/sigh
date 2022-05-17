@@ -12,7 +12,9 @@ public enum MonadicOperator
     HASHTAG("#"),
     SELF_ADD("+:"),
     SELF_MULT("*:"),
-    MIN_SLASH("-/");
+    MIN_SLASH("-/"),
+    AND_SLASH("&/"),
+    OR_SLASH("|/");
 
     public final String string;
 
