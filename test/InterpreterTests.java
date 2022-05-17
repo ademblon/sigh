@@ -690,6 +690,11 @@ public final class InterpreterTests extends TestFixture {
         check("if ([0.0]) return 1 else if (1) return 2 else return 3 ", 2L);
         check("if ([0.0]) return 1 else if (0) return 2 else return 3 ", 3L);
 
+        check("if ([17, 0]) return 1 else return 2", 1L);
+        check("if ([0, 4524]) return 1 else return 2", 2L);
+        check("if ([0.0, 1.0]) return 1 else if (1) return 2 else return 3 ", 2L);
+        check("if ([0.0, 0.0]) return 1 else if (0) return 2 else return 3 ", 3L);
+
 
         check("var i: Int = 0; while (i < 3) { print(\"\" + i); i = i + 1 } ", null, "0\n1\n2\n");
     }
