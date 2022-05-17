@@ -430,7 +430,10 @@ public final class InterpreterTests extends TestFixture {
         checkExpr("[4, 3, 2] <> [1, 2, 3]",  new Object[]{4L, 3L, 2L, 1L, 2L, 3L});
         checkExpr("[6] ^ [2]",  new Object[]{36L});
         checkExpr("[4, 3, 2] ^ [1, 2, 3]",  new Object[]{4L, 9L, 8L});
-
+        checkExpr("[0] || [0]",  new Object[]{0L});
+        checkExpr("[0, 1, 0] || [1, 1, 0]",  new Object[]{1L, 1L, 0L});
+        checkExpr("[1] && [0]",  new Object[]{0L});
+        checkExpr("[0, 1, 0] && [1, 1, 0]",  new Object[]{0L, 1L, 0L});
 
     }
 
@@ -488,14 +491,6 @@ public final class InterpreterTests extends TestFixture {
 
     @Test
     public void testOtherBinary () {
-        checkExpr("true  && true",  true);
-        checkExpr("true  || true",  true);
-        checkExpr("true  || false", true);
-        checkExpr("false || true",  true);
-        checkExpr("false && true",  false);
-        checkExpr("true  && false", false);
-        checkExpr("false && false", false);
-        checkExpr("false || false", false);
 
         checkExpr("1 + \"a\"", "1a");
         checkExpr("\"a\" + 1", "a1");

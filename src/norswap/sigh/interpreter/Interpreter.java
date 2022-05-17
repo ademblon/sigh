@@ -521,18 +521,11 @@ public final class Interpreter {
     private Object diadicExpressionCalculate(Type leftType, Type rightType, Object left, Object right, DiadicOperator operator)
     {
         // Cases where both operands should not be evaluated.
-        switch (operator) {
-            case OR:
-                return booleanOp(left,right, false);
-            case AND:
-                return booleanOp(left,right, true);
-        }
-
         if (operator == DiadicOperator.ADD && (leftType instanceof StringType || rightType instanceof StringType))
             return convertToString(left) + convertToString(right);
 
         boolean floating = istypefloat(leftType) || istypefloat(rightType);
-        boolean numeric = leftType instanceof FloatType || rightType instanceof FloatType || leftType instanceof IntType || rightType instanceof IntType;
+        boolean numeric = (leftType instanceof FloatType || leftType instanceof IntType) && (rightType instanceof FloatType || rightType instanceof IntType);
         boolean array = leftType instanceof ArrayType || rightType instanceof ArrayType;
 
         if (array)
@@ -558,6 +551,23 @@ public final class Interpreter {
             : (boolean) left || (boolean) right;
     }
 
+    private boolean oropdouble(double left, double right){
+        return left == 0.0 && right == 0.0;
+    }
+
+    private boolean oroplong(long left, long right){
+        return left == 0 && right == 0;
+    }
+
+    private boolean andopdouble(double left, double right){
+        return left != 0.0 && right != 0.0;
+    }
+
+    private boolean andoplong(long left, long right){
+        return left != 0 && right != 0;
+    }
+
+
     // ---------------------------------------------------------------------------------------------
 
     private Object numericOp
@@ -572,37 +582,7 @@ public final class Interpreter {
         iright = right.longValue();
 
         Object result;
-
-        switch (operator) {
-            case MULTIPLY:
-                return floating ? (Object) (fleft * fright) : (Object) (ileft * iright);
-            case DIVIDE:
-                return floating ? (Object) (fleft / fright) : (Object) (ileft / iright);
-            case REMAINDER:
-                return floating ? (Object) (fleft % fright) : (Object) (ileft % iright);
-            case ADD:
-                return floating ? (Object) (fleft + fright) : (Object) (ileft + iright);
-            case SUBTRACT:
-                return floating ? (Object) (fleft - fright) : (Object) (ileft - iright);
-            case EXPONENT:
-                return floating ? (Object) Math.pow(fleft, fright) : (Object) ((long) Math.pow(ileft, iright));
-            case GREATER:
-                return floating ? (Object) (fleft > fright ? 1.0 : 0.0) : (Object) (ileft > iright ? (long) 1 : (long) 0);
-            case LOWER:
-                return floating ? (Object) (fleft < fright ? 1.0 : 0.0) : (Object) (ileft < iright ? (long) 1 : (long) 0);
-            case GREATER_EQUAL:
-                return floating ? (Object) (fleft >= fright ? 1.0 : 0.0)  : (Object) (ileft >= iright ?  (long) 1 : (long) 0);
-            case LOWER_EQUAL:
-                return floating ? (Object) (fleft <= fright ? 1.0 : 0.0) : (Object) (ileft <= iright ? (long) 1 :(long)  0);
-            case EQUALITY:
-                return floating ? (Object) (fleft == fright ? 1.0 : 0.0) : (Object) (ileft == iright ? (long) 1 : (long) 0);
-            case NOT_EQUALS:
-                return floating ? (Object) (fleft != fright ? 1.0 : 0.0) : (Object) (ileft != iright ? (long) 1 : (long) 0);
-            case CONCAT:
-                return floating ? new Object[]{fleft, fright} : new Object[]{ileft, iright};
-            default:
-                throw new Error("should not reach here");
-        }
+        return getvalDiadicOperation(operator,floating,ileft,iright,fleft,fright);
     }
 
 
@@ -904,6 +884,12 @@ public final class Interpreter {
                 return floating ? (Object) (fleft == fright ? 1.0 : 0.0) : (Object) (ileft == iright ? (long) 1 : (long) 0);
             case NOT_EQUALS:
                 return floating ? (Object) (fleft != fright ? 1.0 : 0.0) : (Object) (ileft != iright ? (long) 1 : (long) 0);
+            case OR:
+                return floating ? (Object) (oropdouble(fleft,fright) ? 0.0 : 1.0) : (Object) (oroplong(ileft,iright) ? (long) 0 : (long) 1);
+            case AND:
+                return floating ? (Object) (andopdouble(fleft,fright) ? 1.0 : 0.0) : (Object) (andoplong(ileft,iright) ? (long) 1 : (long) 0);
+            case CONCAT: //only used in numeric op == int/float <> int/float, no  array involved
+                return floating ? new Object[]{fleft, fright} : new Object[]{ileft, iright};
             default:
                 throw new Error("should not reach here");
         }

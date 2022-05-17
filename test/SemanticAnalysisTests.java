@@ -113,17 +113,7 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
     // ---------------------------------------------------------------------------------------------
 
     @Test public void testOtherBinary() {
-        successInput("return true && false");
-        successInput("return false && true");
-        successInput("return true && true");
-        successInput("return true || false");
-        successInput("return false || true");
-        successInput("return false || false");
-
-        failureInputWith("return false || 1",
-            "Attempting to perform binary logic on non-boolean type: Int");
-        failureInputWith("return 2 || true",
-            "Attempting to perform binary logic on non-boolean type: Int");
+      ;
 
         successInput("return 1 + \"a\"");
         successInput("return \"a\" + 1");
@@ -133,13 +123,8 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return 1 == 2");
         successInput("return 1.0 == 1.0");
         successInput("return 1.0 == 2.0");
-        successInput("return true == true");
-        successInput("return false == false");
-        successInput("return true == false");
         successInput("return 1 == 1.0");
 
-        failureInputWith("return true == 1", "Trying to compare incomparable types Bool and Int");
-        failureInputWith("return 2 == false", "Trying to compare incomparable types Int and Bool");
 
         successInput("return \"hi\" == \"hi\"");
         successInput("return [1] == [1]");
@@ -148,13 +133,7 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
         successInput("return 1 != 2");
         successInput("return 1.0 != 1.0");
         successInput("return 1.0 != 2.0");
-        successInput("return true != true");
-        successInput("return false != false");
-        successInput("return true != false");
         successInput("return 1 != 1.0");
-
-        failureInputWith("return true != 1", "Trying to compare incomparable types Bool and Int");
-        failureInputWith("return 2 != false", "Trying to compare incomparable types Int and Bool");
 
         successInput("return \"hi\" != \"hi\"");
         successInput("return [1] != [1]");
